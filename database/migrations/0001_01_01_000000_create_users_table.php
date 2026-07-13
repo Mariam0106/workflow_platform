@@ -10,32 +10,55 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
-        });
+{
+    Schema::create('users', function (Blueprint $table) {
 
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
-            $table->string('token');
-            $table->timestamp('created_at')->nullable();
-        });
+        // Primary Key
+        $table->id();
 
-        Schema::create('sessions', function (Blueprint $table) {
-            $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
-            $table->string('ip_address', 45)->nullable();
-            $table->text('user_agent')->nullable();
-            $table->longText('payload');
-            $table->integer('last_activity')->index();
-        });
-    }
+        // Organization
+        $table->foreignId('entity_id')
+              ->constrained('entities')
+              ->restrictOnDelete()
+              ->cascadeOnUpdate();
+
+        $table->foreignId('department_id')
+              ->constrained('departments')
+              ->restrictOnDelete()
+              ->cascadeOnUpdate();
+
+        $table->foreignId('business_function_id')
+              ->constrained('business_functions')
+              ->restrictOnDelete()
+              ->cascadeOnUpdate();
+
+        $table->foreignId('application_role_id')
+              ->constrained('application_roles')
+              ->restrictOnDelete()
+              ->cascadeOnUpdate();
+
+        // Identity
+        $table->string('first_name',100);
+        $table->string('last_name',100);
+        $table->string('email')->unique();
+        $table->string('phone',30)->nullable();
+
+        // Authentication
+        $table->string('password');
+        $table->rememberToken();
+
+        // Employee Information
+        $table->string('employee_number',30)->unique()->nullable();
+        $table->string('job_title',150)->nullable();
+
+        // Status
+        $table->boolean('is_active')->default(true);
+
+        // Audit
+        $table->timestamps();
+        $table->softDeletes();
+    });
+}
 
     /**
      * Reverse the migrations.
