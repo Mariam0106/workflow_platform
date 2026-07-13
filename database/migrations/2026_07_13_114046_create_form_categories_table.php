@@ -10,12 +10,29 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::create('form_categories', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
-    }
+{
+    Schema::create('form_categories', function (Blueprint $table) {
+
+        // Primary Key
+        $table->id();
+
+        // Business Information
+        $table->string('code', 30)->unique();
+        $table->string('name', 100);
+        $table->text('description')->nullable();
+
+        // Display
+        $table->string('icon')->nullable();
+        $table->integer('display_order')->default(0);
+
+        // Status
+        $table->boolean('is_active')->default(true);
+
+        // Audit
+        $table->timestamps();
+        $table->softDeletes();
+    });
+}
 
     /**
      * Reverse the migrations.
