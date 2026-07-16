@@ -58,8 +58,11 @@ class FormCategory extends Model
 
     protected $fillable = [
 
+        'code',
         'name',
         'description',
+        'icon',
+        'display_order',
         'is_active',
 
     ];

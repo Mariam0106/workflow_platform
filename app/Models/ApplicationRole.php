@@ -84,6 +84,7 @@ class ApplicationRole extends Model
     protected function casts(): array
     {
         return [
+            'code' => \App\Enums\ApplicationRoleCode::class,
             'is_active' => 'boolean',
         ];
     }

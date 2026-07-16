@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\FormStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -74,6 +75,8 @@ class Form extends Model
 
         'workflow_id',
 
+        'code',
+
         'name',
 
         'description',
@@ -81,6 +84,8 @@ class Form extends Model
         'version',
 
         'status',
+
+        'published_at',
 
         'is_active',
 
@@ -96,7 +101,11 @@ class Form extends Model
 
             'version' => 'integer',
 
+            'status' => FormStatus::class,
+
             'is_active' => 'boolean',
+
+            'published_at' => 'datetime',
 
             'created_at' => 'datetime',
 
@@ -157,7 +166,7 @@ class Form extends Model
      */
     public function scopePublished(Builder $query): Builder
     {
-        return $query->where('status', 'Published');
+        return $query->where('status', FormStatus::Published);
     }
 
     /**
@@ -165,7 +174,7 @@ class Form extends Model
      */
     public function scopeDraft(Builder $query): Builder
     {
-        return $query->where('status', 'Draft');
+        return $query->where('status', FormStatus::Draft);
     }
 
     /**
@@ -173,7 +182,7 @@ class Form extends Model
      */
     public function scopeArchived(Builder $query): Builder
     {
-        return $query->where('status', 'Archived');
+        return $query->where('status', FormStatus::Archived);
     }
 
     /**
@@ -193,7 +202,7 @@ class Form extends Model
      */
     public function isPublished(): bool
     {
-        return $this->status === 'Published';
+        return $this->status === FormStatus::Published;
     }
 
     /**
@@ -201,7 +210,7 @@ class Form extends Model
      */
     public function isDraft(): bool
     {
-        return $this->status === 'Draft';
+        return $this->status === FormStatus::Draft;
     }
 
     /**
@@ -209,7 +218,7 @@ class Form extends Model
      */
     public function isArchived(): bool
     {
-        return $this->status === 'Archived';
+        return $this->status === FormStatus::Archived;
     }
 
     /**

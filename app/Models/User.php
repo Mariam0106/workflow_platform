@@ -75,6 +75,10 @@ class User extends Authenticatable
         'business_function_id',
         'application_role_id',
 
+        // Hierarchical manager (N+1)
+
+        'manager_id',
+
         // Identity
 
         'first_name',
@@ -112,6 +116,10 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+
+            'email' => \App\ValueObjects\CompanyEmail::class,
+
+            'phone' => \App\ValueObjects\PhoneNumber::class,
 
             'password' => 'hashed',
 
@@ -173,6 +181,24 @@ class User extends Authenticatable
     public function applicationRole(): BelongsTo
     {
         return $this->belongsTo(ApplicationRole::class);
+    }
+
+    /**
+     * Direct hierarchical manager (N+1).
+     *
+     * Nullable: the top of the hierarchy has no manager.
+     */
+    public function manager(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'manager_id');
+    }
+
+    /**
+     * Direct reports of this User (N-1 relationship, inverse of manager()).
+     */
+    public function subordinates(): HasMany
+    {
+        return $this->hasMany(User::class, 'manager_id');
     }
 
     /*-------------------------------------------------------------------------
@@ -277,10 +303,26 @@ class User extends Authenticatable
      * Determines whether the User owns the specified Application Role.
      *
      * Example:
-     * $user->hasRole(ApplicationRole::ADMIN);
+     * $user->hasRole(\App\Enums\ApplicationRoleCode::Administrator);
+     *
+     * NOTE (Etape 3) : accepts the ApplicationRoleCode Enum, not a plain
+     * string - since Etape 1, ApplicationRole::code is Enum-cast, so a
+     * loose string comparison would never match.
      */
-    public function hasRole(string $role): bool
+    public function hasRole(\App\Enums\ApplicationRoleCode $role): bool
     {
         return $this->applicationRole?->code === $role;
+    }
+
+    /**
+     * Route notifications for the mail channel.
+     *
+     * NOTE (Etape 3) : email is now cast to the CompanyEmail Value Object -
+     * Notifiable's default routeNotificationForMail() would otherwise hand
+     * that object straight to the mailer instead of a plain string.
+     */
+    public function routeNotificationForMail(): string
+    {
+        return (string) $this->email;
     }
 }

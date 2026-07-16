@@ -9,55 +9,49 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * ==========================================================================
- * DYNAMIC CONFIGURATION MODEL
+ * RUNTIME BUSINESS MODEL
  * ==========================================================================
  *
- * WorkflowTransition Model
+ * WorkflowStepHistory Model
  * ==========================================================================
  *
- * Represents a possible path between two Workflow Steps.
+ * Represents one traversal of a Workflow Step by a Request.
  *
- * A Workflow Transition does not execute itself.
- * It is evaluated by the Workflow Engine, which determines whether the
- * transition can be executed based on its Conditions and Priority.
+ * Every time a Request enters a Step, a new history row is created.
+ * When the Request leaves that Step (via a Transition), the row is
+ * closed by setting left_at.
  *
- * Multiple transitions may exist for the same Workflow Step, but only one
- * transition can be selected during workflow execution.
+ * This model is purely an audit trail. It never drives workflow logic
+ * itself — it only records what the Workflow Engine already decided.
  *
+ * --------------------------------------------------------------------------
  * Responsibilities
  * --------------------------------------------------------------------------
- * • Connect two Workflow Steps.
- * • Define execution priority.
- * • Own Transition Conditions.
- * • Provide execution metadata to the Workflow Engine.
+ * • Belongs to one Request.
+ * • Belongs to one Workflow Step.
+ * • Optionally records which Transition caused the move into this Step.
+ * • Preserves an immutable execution trail per Request.
  *
+ * --------------------------------------------------------------------------
  * Business Rules
  * --------------------------------------------------------------------------
- * BR-20  Transitions define the next Workflow Step.
- * BR-21  Conditions are evaluated before execution.
- * BR-22  Only one Transition may be executed.
- * BR-23  Priority resolves transition conflicts.
- * BR-27  Validators are configured through Workflow configuration.
- * BR-58  Business logic is database driven.
- * BR-59  Workflow Engine determines the next validator.
- * BR-60  Generic and reusable architecture.
+ * BR-25 Existing Requests keep their original Workflow Version — this
+ *       history trail lets you reconstruct exactly which Steps a given
+ *       Request travelled through, under which Workflow Version.
+ * BR-48 Every important action is logged.
  *
+ * --------------------------------------------------------------------------
  * Module
  * --------------------------------------------------------------------------
  * Workflow Engine
- *
  * ==========================================================================
  */
-
-class WorkflowTransition extends Model
+class WorkflowStepHistory extends Model
 {
     use HasFactory;
-    use SoftDeletes;
 
     /*-------------------------------------------------------------------------
     | Mass Assignment
@@ -65,21 +59,15 @@ class WorkflowTransition extends Model
 
     protected $fillable = [
 
-        'workflow_id',
+        'request_id',
 
-        'current_step_id',
+        'workflow_step_id',
 
-        'next_step_id',
+        'workflow_transition_id',
 
-        'name',
+        'entered_at',
 
-        'description',
-
-        'priority',
-
-        'is_default',
-
-        'is_active',
+        'left_at',
 
     ];
 
@@ -91,72 +79,46 @@ class WorkflowTransition extends Model
     {
         return [
 
-            'priority'   => 'integer',
+            'entered_at' => 'datetime',
 
-            'is_default' => 'boolean',
-
-            'is_active'  => 'boolean',
+            'left_at' => 'datetime',
 
             'created_at' => 'datetime',
 
             'updated_at' => 'datetime',
 
-            'deleted_at' => 'datetime',
-
         ];
     }
 
     /*-------------------------------------------------------------------------
-    | Workflow Relationships
+    | Runtime Relationships
     |------------------------------------------------------------------------*/
 
     /**
-     * Workflow owning this transition.
+     * Request that traversed this Step.
      */
-    public function workflow(): BelongsTo
+    public function request(): BelongsTo
     {
-        return $this->belongsTo(Workflow::class);
+        return $this->belongsTo(Request::class);
     }
 
     /**
-     * Workflow Step from which the transition starts.
+     * Workflow Step that was traversed.
      */
-    public function currentStep(): BelongsTo
+    public function workflowStep(): BelongsTo
     {
-        return $this->belongsTo(
-            WorkflowStep::class,
-            'current_step_id'
-        );
+        return $this->belongsTo(WorkflowStep::class);
     }
 
     /**
-     * Workflow Step reached after execution.
-     */
-    public function nextStep(): BelongsTo
-    {
-        return $this->belongsTo(
-            WorkflowStep::class,
-            'next_step_id'
-        );
-    }
-
-    /**
-     * Conditions evaluated before executing this transition.
-     */
-    public function conditions(): HasMany
-    {
-        return $this->hasMany(TransitionCondition::class)
-                    ->orderBy('execution_order');
-    }
-
-    /**
-     * Workflow executions that used this transition.
+     * Transition that caused the Request to enter this Step.
      *
-     * (Requires transition_id in workflow_step_histories.)
+     * Nullable: the very first Step of a Workflow is entered directly
+     * at submission time, not through a Transition.
      */
-    public function workflowStepHistories(): HasMany
+    public function workflowTransition(): BelongsTo
     {
-        return $this->hasMany(WorkflowStepHistory::class);
+        return $this->belongsTo(WorkflowTransition::class);
     }
 
     /*-------------------------------------------------------------------------
@@ -164,39 +126,21 @@ class WorkflowTransition extends Model
     |------------------------------------------------------------------------*/
 
     /**
-     * Active transitions.
+     * History rows still open (the Request is currently on this Step).
      */
     #[Scope]
-    protected function active(Builder $query): void
+    protected function current(Builder $query): void
     {
-        $query->where('is_active', true);
+        $query->whereNull('left_at');
     }
 
     /**
-     * Inactive transitions.
+     * History rows already closed (the Request has since moved on).
      */
     #[Scope]
-    protected function inactive(Builder $query): void
+    protected function closed(Builder $query): void
     {
-        $query->where('is_active', false);
-    }
-
-    /**
-     * Default transition.
-     */
-    #[Scope]
-    protected function default(Builder $query): void
-    {
-        $query->where('is_default', true);
-    }
-
-    /**
-     * Sort transitions by execution priority.
-     */
-    #[Scope]
-    protected function byPriority(Builder $query): void
-    {
-        $query->orderBy('priority');
+        $query->whereNotNull('left_at');
     }
 
     /*-------------------------------------------------------------------------
@@ -204,44 +148,10 @@ class WorkflowTransition extends Model
     |------------------------------------------------------------------------*/
 
     /**
-     * Determine whether this transition is active.
+     * Determine whether the Request is still on this Step.
      */
-    public function isActive(): bool
+    public function isCurrent(): bool
     {
-        return $this->is_active;
-    }
-
-    /**
-     * Determine whether this transition is inactive.
-     */
-    public function isInactive(): bool
-    {
-        return ! $this->is_active;
-    }
-
-    /**
-     * Determine whether this is the default transition.
-     */
-    public function isDefault(): bool
-    {
-        return $this->is_default;
-    }
-
-    /**
-     * Determine whether this transition contains execution conditions.
-     */
-    public function hasConditions(): bool
-    {
-        return $this->conditions()->exists();
-    }
-
-    /**
-     * Determine whether this transition can participate in workflow execution.
-     *
-     * The Workflow Engine remains responsible for evaluating conditions.
-     */
-    public function isAvailable(): bool
-    {
-        return $this->is_active;
+        return $this->left_at === null;
     }
 }

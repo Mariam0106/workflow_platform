@@ -4,11 +4,17 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\TransitionLogicalOperator;
+use App\Enums\TransitionOperator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+
+// NOTE: form_field_id replaces the previous free-text "field_name" column
+// (Etape 0 correction) - guarantees a condition can never reference a
+// Form Field that does not exist or was deleted (referential integrity).
 
 /**
  * ==========================================================================
@@ -75,7 +81,7 @@ class TransitionCondition extends Model
 
         'workflow_transition_id',
 
-        'field_name',
+        'form_field_id',
 
         'operator',
 
@@ -96,6 +102,10 @@ class TransitionCondition extends Model
     protected function casts(): array
     {
         return [
+
+            'operator' => TransitionOperator::class,
+
+            'logical_operator' => TransitionLogicalOperator::class,
 
             'execution_order' => 'integer',
 
@@ -120,6 +130,14 @@ class TransitionCondition extends Model
     public function workflowTransition(): BelongsTo
     {
         return $this->belongsTo(WorkflowTransition::class);
+    }
+
+    /**
+     * Form Field whose value is compared by this condition.
+     */
+    public function formField(): BelongsTo
+    {
+        return $this->belongsTo(FormField::class);
     }
 
     /*-------------------------------------------------------------------------
@@ -159,7 +177,7 @@ class TransitionCondition extends Model
      */
     public function usesAnd(): bool
     {
-        return strtoupper($this->logical_operator) === 'AND';
+        return $this->logical_operator === \App\Enums\TransitionLogicalOperator::And;
     }
 
     /**
@@ -167,6 +185,6 @@ class TransitionCondition extends Model
      */
     public function usesOr(): bool
     {
-        return strtoupper($this->logical_operator) === 'OR';
+        return $this->logical_operator === \App\Enums\TransitionLogicalOperator::Or;
     }
 }

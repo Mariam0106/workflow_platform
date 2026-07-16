@@ -71,6 +71,7 @@ class WorkflowCategory extends Model
 
     protected $fillable = [
 
+        'code',
         'name',
         'description',
         'is_active',

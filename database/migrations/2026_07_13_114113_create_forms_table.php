@@ -8,39 +8,50 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * CORRECTION (Etape 0) : meme raisonnement que pour "workflows"
+     * (version entiere, status Draft/Published/Archived, unicite
+     * (code, version) au lieu de code seul) - BR-15/16/17.
      */
     public function up(): void
-{
-    Schema::create('forms', function (Blueprint $table) {
+    {
+        Schema::create('forms', function (Blueprint $table) {
 
-        // Primary Key
-        $table->id();
+            // Primary Key
+            $table->id();
 
-        // Relationships
-        $table->foreignId('form_category_id')
-              ->constrained('form_categories')
-              ->restrictOnDelete()
-              ->cascadeOnUpdate();
+            // Relationships
+            $table->foreignId('form_category_id')
+                  ->constrained('form_categories')
+                  ->restrictOnDelete()
+                  ->cascadeOnUpdate();
 
-        $table->foreignId('workflow_id')
-              ->constrained('workflows')
-              ->restrictOnDelete()
-              ->cascadeOnUpdate();
+            $table->foreignId('workflow_id')
+                  ->constrained('workflows')
+                  ->restrictOnDelete()
+                  ->cascadeOnUpdate();
 
-        // Business Information
-        $table->string('code', 30)->unique();
-        $table->string('name', 150);
-        $table->text('description')->nullable();
-        $table->string('version', 20)->default('1.0');
+            // Business Information
+            $table->string('code', 30);
+            $table->string('name', 150);
+            $table->text('description')->nullable();
+            $table->unsignedInteger('version')->default(1);
 
-        // Configuration
-        $table->boolean('is_active')->default(true);
+            // Lifecycle
+            $table->string('status', 20)->default('Draft');
+            $table->timestamp('published_at')->nullable();
 
-        // Audit
-        $table->timestamps();
-        $table->softDeletes();
-    });
-}
+            // Configuration
+            $table->boolean('is_active')->default(true);
+
+            // Audit
+            $table->timestamps();
+            $table->softDeletes();
+
+            // Constraints
+            $table->unique(['code', 'version']);
+        });
+    }
 
     /**
      * Reverse the migrations.

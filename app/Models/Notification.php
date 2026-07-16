@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\NotificationChannel;
+use App\Enums\NotificationStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -57,18 +59,6 @@ class Notification extends Model
     use HasFactory;
 
     /*-------------------------------------------------------------------------
-    | Status Constants
-    |------------------------------------------------------------------------*/
-
-    public const PENDING = 'Pending';
-
-    public const SENT = 'Sent';
-
-    public const FAILED = 'Failed';
-
-    public const READ = 'Read';
-
-    /*-------------------------------------------------------------------------
     | Mass Assignment
     |------------------------------------------------------------------------*/
 
@@ -101,6 +91,10 @@ class Notification extends Model
     protected function casts(): array
     {
         return [
+
+            'channel' => NotificationChannel::class,
+
+            'status' => NotificationStatus::class,
 
             'sent_at' => 'datetime',
 
@@ -146,7 +140,7 @@ class Notification extends Model
      */
     public function scopePending(Builder $query): Builder
     {
-        return $query->where('status', self::PENDING);
+        return $query->where('status', NotificationStatus::Pending);
     }
 
     /**
@@ -154,7 +148,7 @@ class Notification extends Model
      */
     public function scopeSent(Builder $query): Builder
     {
-        return $query->where('status', self::SENT);
+        return $query->where('status', NotificationStatus::Sent);
     }
 
     /**
@@ -162,7 +156,7 @@ class Notification extends Model
      */
     public function scopeFailed(Builder $query): Builder
     {
-        return $query->where('status', self::FAILED);
+        return $query->where('status', NotificationStatus::Failed);
     }
 
     /**
@@ -170,7 +164,7 @@ class Notification extends Model
      */
     public function scopeRead(Builder $query): Builder
     {
-        return $query->where('status', self::READ);
+        return $query->where('status', NotificationStatus::Read);
     }
 
     /*-------------------------------------------------------------------------
@@ -182,7 +176,7 @@ class Notification extends Model
      */
     public function isSent(): bool
     {
-        return $this->status === self::SENT;
+        return $this->status === NotificationStatus::Sent;
     }
 
     /**
@@ -190,7 +184,7 @@ class Notification extends Model
      */
     public function isFailed(): bool
     {
-        return $this->status === self::FAILED;
+        return $this->status === NotificationStatus::Failed;
     }
 
     /**
@@ -198,7 +192,7 @@ class Notification extends Model
      */
     public function isRead(): bool
     {
-        return $this->status === self::READ;
+        return $this->status === NotificationStatus::Read;
     }
 
     /**
@@ -206,7 +200,7 @@ class Notification extends Model
      */
     public function isPending(): bool
     {
-        return $this->status === self::PENDING;
+        return $this->status === NotificationStatus::Pending;
     }
 
     /**
@@ -214,7 +208,7 @@ class Notification extends Model
      */
     public function isEmail(): bool
     {
-        return $this->channel === 'Email';
+        return $this->channel === NotificationChannel::Email;
     }
 
     /**
@@ -222,6 +216,6 @@ class Notification extends Model
      */
     public function isInApp(): bool
     {
-        return $this->channel === 'In-App';
+        return $this->channel === NotificationChannel::InApp;
     }
 }

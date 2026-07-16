@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\ValidatorType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,7 +24,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *
  * A Workflow Step defines:
  *
- * • the validator
+ * • the validator (via validator_type + validator_reference)
  * • the execution order
  * • whether it is the first step
  * • whether it is the last step
@@ -74,17 +75,21 @@ class WorkflowStep extends Model
 
         'workflow_id',
 
+        'code',
+
         'name',
 
         'description',
-
-        'validator_role',
 
         'step_order',
 
         'is_start',
 
         'is_end',
+
+        'validator_type',
+
+        'validator_reference',
 
         'is_active',
 
@@ -103,6 +108,10 @@ class WorkflowStep extends Model
             'is_start' => 'boolean',
 
             'is_end' => 'boolean',
+
+            'validator_type' => ValidatorType::class,
+
+            'validator_reference' => 'integer',
 
             'is_active' => 'boolean',
 
@@ -128,24 +137,24 @@ class WorkflowStep extends Model
     }
 
     /**
-     * Outgoing transitions.
+     * Outgoing transitions (this Step is the origin).
      */
     public function outgoingTransitions(): HasMany
     {
         return $this->hasMany(
             WorkflowTransition::class,
-            'current_step_id'
+            'from_step_id'
         );
     }
 
     /**
-     * Incoming transitions.
+     * Incoming transitions (this Step is the destination).
      */
     public function incomingTransitions(): HasMany
     {
         return $this->hasMany(
             WorkflowTransition::class,
-            'next_step_id'
+            'to_step_id'
         );
     }
 

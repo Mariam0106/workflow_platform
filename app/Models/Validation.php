@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\ValidationDecision;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -59,14 +60,6 @@ class Validation extends Model
     use HasFactory;
 
     /*-------------------------------------------------------------------------
-    | Decision Constants
-    |------------------------------------------------------------------------*/
-
-    public const APPROVED = 'Approved';
-
-    public const REJECTED = 'Rejected';
-
-    /*-------------------------------------------------------------------------
     | Mass Assignment
     |------------------------------------------------------------------------*/
 
@@ -93,6 +86,8 @@ class Validation extends Model
     protected function casts(): array
     {
         return [
+
+            'decision' => ValidationDecision::class,
 
             'validated_at' => 'datetime',
 
@@ -144,7 +139,7 @@ class Validation extends Model
      */
     public function scopeApproved(Builder $query): Builder
     {
-        return $query->where('decision', self::APPROVED);
+        return $query->where('decision', ValidationDecision::Approved);
     }
 
     /**
@@ -152,7 +147,7 @@ class Validation extends Model
      */
     public function scopeRejected(Builder $query): Builder
     {
-        return $query->where('decision', self::REJECTED);
+        return $query->where('decision', ValidationDecision::Rejected);
     }
 
     /*-------------------------------------------------------------------------
@@ -164,7 +159,7 @@ class Validation extends Model
      */
     public function isApproved(): bool
     {
-        return $this->decision === self::APPROVED;
+        return $this->decision === ValidationDecision::Approved;
     }
 
     /**
@@ -172,7 +167,7 @@ class Validation extends Model
      */
     public function isRejected(): bool
     {
-        return $this->decision === self::REJECTED;
+        return $this->decision === ValidationDecision::Rejected;
     }
 
     /**

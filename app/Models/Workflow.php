@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\WorkflowStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -79,6 +80,8 @@ class Workflow extends Model
 
         'workflow_category_id',
 
+        'code',
+
         'name',
 
         'description',
@@ -86,6 +89,10 @@ class Workflow extends Model
         'version',
 
         'status',
+
+        'published_at',
+
+        'is_default',
 
         'is_active',
 
@@ -101,7 +108,13 @@ class Workflow extends Model
 
             'version' => 'integer',
 
+            'status' => WorkflowStatus::class,
+
+            'is_default' => 'boolean',
+
             'is_active' => 'boolean',
+
+            'published_at' => 'datetime',
 
             'created_at' => 'datetime',
 
@@ -162,7 +175,7 @@ class Workflow extends Model
      */
     public function scopePublished(Builder $query): Builder
     {
-        return $query->where('status', 'Published');
+        return $query->where('status', WorkflowStatus::Published);
     }
 
     /**
@@ -170,7 +183,7 @@ class Workflow extends Model
      */
     public function scopeDraft(Builder $query): Builder
     {
-        return $query->where('status', 'Draft');
+        return $query->where('status', WorkflowStatus::Draft);
     }
 
     /**
@@ -178,7 +191,7 @@ class Workflow extends Model
      */
     public function scopeArchived(Builder $query): Builder
     {
-        return $query->where('status', 'Archived');
+        return $query->where('status', WorkflowStatus::Archived);
     }
 
     /**
@@ -198,7 +211,7 @@ class Workflow extends Model
      */
     public function isPublished(): bool
     {
-        return $this->status === 'Published';
+        return $this->status === WorkflowStatus::Published;
     }
 
     /**
@@ -206,7 +219,7 @@ class Workflow extends Model
      */
     public function isDraft(): bool
     {
-        return $this->status === 'Draft';
+        return $this->status === WorkflowStatus::Draft;
     }
 
     /**
@@ -214,7 +227,7 @@ class Workflow extends Model
      */
     public function isArchived(): bool
     {
-        return $this->status === 'Archived';
+        return $this->status === WorkflowStatus::Archived;
     }
 
     /**

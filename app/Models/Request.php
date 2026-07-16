@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\RequestStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -100,7 +101,11 @@ class Request extends Model
     {
         return [
 
+            'reference_number' => \App\ValueObjects\RequestReference::class,
+
             'workflow_version' => 'integer',
+
+            'status' => \App\Enums\RequestStatus::class,
 
             'submitted_at' => 'datetime',
 
@@ -213,12 +218,12 @@ class Request extends Model
 
     public function scopeDraft(Builder $query): Builder
     {
-        return $query->where('status', 'Draft');
+        return $query->where('status', RequestStatus::Draft);
     }
 
     public function scopeSubmitted(Builder $query): Builder
     {
-        return $query->where('status', 'Submitted');
+        return $query->where('status', RequestStatus::Submitted);
     }
 
     public function scopeApproved(Builder $query): Builder
@@ -228,12 +233,12 @@ class Request extends Model
 
     public function scopeRejected(Builder $query): Builder
     {
-        return $query->where('status', 'Rejected');
+        return $query->where('status', RequestStatus::Rejected);
     }
 
     public function scopeCompleted(Builder $query): Builder
     {
-        return $query->where('status', 'Completed');
+        return $query->where('status', RequestStatus::Completed);
     }
 
     /*-------------------------------------------------------------------------
@@ -242,26 +247,26 @@ class Request extends Model
 
     public function isDraft(): bool
     {
-        return $this->status === 'Draft';
+        return $this->status === RequestStatus::Draft;
     }
 
     public function isSubmitted(): bool
     {
-        return $this->status === 'Submitted';
+        return $this->status === RequestStatus::Submitted;
     }
 
     public function isRejected(): bool
     {
-        return $this->status === 'Rejected';
+        return $this->status === RequestStatus::Rejected;
     }
 
     public function isCompleted(): bool
     {
-        return $this->status === 'Completed';
+        return $this->status === RequestStatus::Completed;
     }
 
     public function isEditable(): bool
     {
-        return $this->status === 'Draft';
+        return $this->status === RequestStatus::Draft;
     }
 }

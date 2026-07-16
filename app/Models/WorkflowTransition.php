@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,34 +20,31 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * WorkflowTransition Model
  * ==========================================================================
  *
- * Represents a possible transition between two Workflow Steps.
+ * Represents a possible path between two Workflow Steps.
  *
- * A transition never executes itself.
+ * A Workflow Transition does not execute itself.
+ * It is evaluated by the Workflow Engine, which determines whether the
+ * transition can be executed based on its Conditions and Priority.
  *
- * The Workflow Engine evaluates all candidate transitions,
- * verifies their conditions,
- * applies priority,
- * then selects ONE transition.
- *
- * This design makes the workflow completely configurable
- * without modifying the source code.
+ * Multiple transitions may exist for the same Workflow Step, but only one
+ * transition can be selected during workflow execution.
  *
  * --------------------------------------------------------------------------
  * Responsibilities
  * --------------------------------------------------------------------------
- * • Connect two Workflow Steps.
+ * • Connect two Workflow Steps (from_step_id -> to_step_id).
  * • Define execution priority.
  * • Own Transition Conditions.
- * • Be evaluated by WorkflowService.
+ * • Provide execution metadata to the Workflow Engine.
  *
  * --------------------------------------------------------------------------
  * Business Rules
  * --------------------------------------------------------------------------
- * BR-20 Transitions define the next Step.
+ * BR-20 Transitions define the next Workflow Step.
  * BR-21 Conditions are evaluated before execution.
- * BR-22 Only one Transition may execute.
- * BR-23 Priority resolves conflicts.
- * BR-27 Validators are configured by administrators.
+ * BR-22 Only one Transition may be executed.
+ * BR-23 Priority resolves transition conflicts.
+ * BR-27 Validators are configured through Workflow configuration.
  * BR-58 Business logic is database driven.
  * BR-59 Workflow Engine determines the next validator.
  * BR-60 Generic and reusable architecture.
@@ -71,11 +69,11 @@ class WorkflowTransition extends Model
 
         'workflow_id',
 
-        'current_step_id',
+        'from_step_id',
 
-        'next_step_id',
+        'to_step_id',
 
-        'name',
+        'action_name',
 
         'description',
 
@@ -123,34 +121,42 @@ class WorkflowTransition extends Model
     }
 
     /**
-     * Current Workflow Step.
+     * Workflow Step from which the transition starts.
      */
-    public function currentStep(): BelongsTo
+    public function fromStep(): BelongsTo
     {
         return $this->belongsTo(
             WorkflowStep::class,
-            'current_step_id'
+            'from_step_id'
         );
     }
 
     /**
-     * Destination Workflow Step.
+     * Workflow Step reached after execution.
      */
-    public function nextStep(): BelongsTo
+    public function toStep(): BelongsTo
     {
         return $this->belongsTo(
             WorkflowStep::class,
-            'next_step_id'
+            'to_step_id'
         );
     }
 
     /**
-     * Conditions attached to this transition.
+     * Conditions evaluated before executing this transition.
      */
     public function transitionConditions(): HasMany
     {
         return $this->hasMany(TransitionCondition::class)
                     ->orderBy('execution_order');
+    }
+
+    /**
+     * Workflow executions that used this transition.
+     */
+    public function workflowStepHistories(): HasMany
+    {
+        return $this->hasMany(WorkflowStepHistory::class);
     }
 
     /*-------------------------------------------------------------------------
@@ -160,25 +166,28 @@ class WorkflowTransition extends Model
     /**
      * Active transitions.
      */
-    public function scopeActive(Builder $query): Builder
+    #[Scope]
+    protected function active(Builder $query): void
     {
-        return $query->where('is_active', true);
+        $query->where('is_active', true);
     }
 
     /**
      * Default transition.
      */
-    public function scopeDefault(Builder $query): Builder
+    #[Scope]
+    protected function default(Builder $query): void
     {
-        return $query->where('is_default', true);
+        $query->where('is_default', true);
     }
 
     /**
-     * Order by priority.
+     * Sort transitions by execution priority.
      */
-    public function scopeByPriority(Builder $query): Builder
+    #[Scope]
+    protected function byPriority(Builder $query): void
     {
-        return $query->orderBy('priority');
+        $query->orderBy('priority');
     }
 
     /*-------------------------------------------------------------------------
@@ -199,5 +208,13 @@ class WorkflowTransition extends Model
     public function isDefault(): bool
     {
         return $this->is_default;
+    }
+
+    /**
+     * Determine whether this transition contains execution conditions.
+     */
+    public function hasConditions(): bool
+    {
+        return $this->transitionConditions()->exists();
     }
 }
