@@ -158,8 +158,14 @@ class AuditLog extends Model
 
     /**
      * Determine whether this action modified data.
+     *
+     * NOTE (Etape 4) : renommee depuis hasChanges() - ce nom entrait en
+     * collision avec Illuminate\Database\Eloquent\Model::hasChanges(),
+     * deja definie par Eloquent avec une signature differente, ce qui
+     * provoquait une erreur fatale PHP a la premiere instanciation
+     * reelle d'un AuditLog.
      */
-    public function hasChanges(): bool
+    public function hasDataChanges(): bool
     {
         return !empty($this->old_values) || !empty($this->new_values);
     }
