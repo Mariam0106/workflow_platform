@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Organisation\Auth;
 
+use App\DataTransferObjects\Organisation\CreateUserDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Organisation\Auth\RegisterUserRequest;
 use App\Models\ApplicationRole;
@@ -29,6 +30,11 @@ use Illuminate\View\View;
  * management come later (Étape 13/14). This only has to be functionally
  * correct so Lali can build Policies/Controllers against a real,
  * authenticated User (Jalon J2/J3).
+ *
+ * NOTE (Étape 6) : building goes through CreateUserDTO now instead of a
+ * raw array, so the day UserService::register() exists (Étape 8), this
+ * store() method shrinks to a single call - only the DTO travels down,
+ * never $request->validated() directly.
  * ==========================================================================
  */
 class RegisteredUserController extends Controller
@@ -46,20 +52,14 @@ class RegisteredUserController extends Controller
 
     public function store(RegisterUserRequest $request): RedirectResponse
     {
-        $validated = $request->validated();
+        $dto = CreateUserDTO::fromArray($request->validated());
 
+        // TODO (Étape 8) : remplacer par UserService::register($dto), qui
+        // encapsulera le Hash::make() et la création en un seul endroit
+        // partagé (Admin "create user" utilisera le même Service).
         $user = User::query()->create([
-            'entity_id' => $validated['entity_id'],
-            'department_id' => $validated['department_id'],
-            'business_function_id' => $validated['business_function_id'],
-            'application_role_id' => $validated['application_role_id'],
-            'manager_id' => $validated['manager_id'] ?? null,
-            'first_name' => $validated['first_name'],
-            'last_name' => $validated['last_name'],
-            'email' => $validated['email'],
-            'phone' => $validated['phone'] ?? null,
-            'password' => Hash::make($validated['password']),
-            'is_active' => true,
+            ...$dto->toArray(),
+            'password' => Hash::make($dto->password),
         ]);
 
         Auth::login($user);
