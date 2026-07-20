@@ -51,9 +51,16 @@ return new class extends Migration
             // Delivery
             $table->string('channel', 20);
             $table->string('status', 20)->default('Pending');
+            $table->index('status');
             $table->timestamp('sent_at')->nullable();
             $table->timestamp('read_at')->nullable();
             $table->text('failure_reason')->nullable();
+
+            // BR-47 : utilise config('workflow.notification_retry_attempts')
+            // (Etape 2) pour savoir combien de tentatives restent avant
+            // d'abandonner et de ne conserver que failure_reason.
+            $table->unsignedTinyInteger('attempt_count')->default(0);
+            $table->timestamp('last_attempt_at')->nullable();
 
             // Audit
             $table->timestamps();

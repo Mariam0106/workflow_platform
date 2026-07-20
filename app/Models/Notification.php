@@ -82,6 +82,10 @@ class Notification extends Model
 
         'failure_reason',
 
+        'attempt_count',
+
+        'last_attempt_at',
+
     ];
 
     /*-------------------------------------------------------------------------
@@ -97,6 +101,10 @@ class Notification extends Model
             'status' => NotificationStatus::class,
 
             'sent_at' => 'datetime',
+
+            'last_attempt_at' => 'datetime',
+
+            'attempt_count' => 'integer',
 
             'read_at' => 'datetime',
 
@@ -217,5 +225,15 @@ class Notification extends Model
     public function isInApp(): bool
     {
         return $this->channel === NotificationChannel::InApp;
+    }
+
+    /**
+     * Determine whether this notification has used up its retry budget
+     * (BR-47). Reads config('workflow.notification_retry_attempts') -
+     * Etape 2 - so the limit can be tuned without a code change.
+     */
+    public function hasExceededRetryLimit(): bool
+    {
+        return $this->attempt_count >= (int) config('workflow.notification_retry_attempts', 3);
     }
 }

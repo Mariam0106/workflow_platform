@@ -89,6 +89,9 @@ class Form extends Model
 
         'is_active',
 
+        'created_by',
+        'updated_by',
+        'published_by',
     ];
 
     /*-------------------------------------------------------------------------
@@ -240,4 +243,29 @@ class Form extends Model
     {
         return 'v' . $this->version;
     }
+
+    /**
+     * User who created this configuration record.
+     */
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * User who last modified this configuration record.
+     */
+    public function updatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    /**
+     * User who published this version.
+     */
+    public function publishedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'published_by');
+    }
+
 }

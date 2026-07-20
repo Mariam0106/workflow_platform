@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\WorkflowStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -79,6 +80,8 @@ class Workflow extends Model
 
         'workflow_category_id',
 
+        'code',
+
         'name',
 
         'description',
@@ -87,12 +90,15 @@ class Workflow extends Model
 
         'status',
 
-        'published_by',
-
         'published_at',
+
+        'is_default',
 
         'is_active',
 
+        'created_by',
+        'updated_by',
+        'published_by',
     ];
 
     /*-------------------------------------------------------------------------
@@ -105,7 +111,13 @@ class Workflow extends Model
 
             'version' => 'integer',
 
+            'status' => WorkflowStatus::class,
+
+            'is_default' => 'boolean',
+
             'is_active' => 'boolean',
+
+            'published_at' => 'datetime',
 
             'created_at' => 'datetime',
 
@@ -126,14 +138,6 @@ class Workflow extends Model
     public function workflowCategory(): BelongsTo
     {
         return $this->belongsTo(WorkflowCategory::class);
-    }
-
-    /**
-     * User who published this workflow.
-     */
-    public function publisher(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'published_by');
     }
 
     /**
@@ -174,7 +178,7 @@ class Workflow extends Model
      */
     public function scopePublished(Builder $query): Builder
     {
-        return $query->where('status', 'Published');
+        return $query->where('status', WorkflowStatus::Published);
     }
 
     /**
@@ -182,7 +186,7 @@ class Workflow extends Model
      */
     public function scopeDraft(Builder $query): Builder
     {
-        return $query->where('status', 'Draft');
+        return $query->where('status', WorkflowStatus::Draft);
     }
 
     /**
@@ -190,7 +194,7 @@ class Workflow extends Model
      */
     public function scopeArchived(Builder $query): Builder
     {
-        return $query->where('status', 'Archived');
+        return $query->where('status', WorkflowStatus::Archived);
     }
 
     /**
@@ -210,7 +214,7 @@ class Workflow extends Model
      */
     public function isPublished(): bool
     {
-        return $this->status === 'Published';
+        return $this->status === WorkflowStatus::Published;
     }
 
     /**
@@ -218,7 +222,7 @@ class Workflow extends Model
      */
     public function isDraft(): bool
     {
-        return $this->status === 'Draft';
+        return $this->status === WorkflowStatus::Draft;
     }
 
     /**
@@ -226,7 +230,7 @@ class Workflow extends Model
      */
     public function isArchived(): bool
     {
-        return $this->status === 'Archived';
+        return $this->status === WorkflowStatus::Archived;
     }
 
     /**
@@ -249,4 +253,29 @@ class Workflow extends Model
     {
         return 'v' . $this->version;
     }
+
+    /**
+     * User who created this configuration record.
+     */
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * User who last modified this configuration record.
+     */
+    public function updatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    /**
+     * User who published this version.
+     */
+    public function publishedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'published_by');
+    }
+
 }

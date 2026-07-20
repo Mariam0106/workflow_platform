@@ -23,7 +23,6 @@ class FormFieldFactory extends Factory
             'placeholder' => null,
             'default_value' => null,
             'validation_rules' => null,
-            'options' => null,
             'is_active' => true,
         ];
     }

@@ -19,6 +19,7 @@ use App\Models\AuditLog;
 use App\Models\BusinessFunction;
 use App\Models\Department;
 use App\Models\Entity;
+use App\Models\FieldOption;
 use App\Models\Form;
 use App\Models\FormCategory;
 use App\Models\FormField;
@@ -150,6 +151,7 @@ class DatabaseSeeder extends Seeder
         $workflowCategory = WorkflowCategory::factory()->create([
             'code' => 'ACCOUNT',
             'name' => 'Account Management',
+            'created_by' => $ceo->id,
         ]);
 
         $workflow = Workflow::factory()->published()->create([
@@ -158,6 +160,8 @@ class DatabaseSeeder extends Seeder
             'name' => 'Account Opening Approval',
             'version' => 1,
             'is_default' => true,
+            'created_by' => $ceo->id,
+            'published_by' => $ceo->id,
         ]);
 
         $stepManagerReview = WorkflowStep::factory()->start()->create([
@@ -203,6 +207,7 @@ class DatabaseSeeder extends Seeder
         $formCategory = FormCategory::factory()->create([
             'code' => 'ACCOUNT_FORMS',
             'name' => 'Account Forms',
+            'created_by' => $ceo->id,
         ]);
 
         $form = Form::factory()->published()->create([
@@ -211,6 +216,8 @@ class DatabaseSeeder extends Seeder
             'code' => 'FORM-ACCOUNT-OPENING',
             'name' => 'Account Opening Request',
             'version' => 1,
+            'created_by' => $ceo->id,
+            'published_by' => $ceo->id,
         ]);
 
         $fieldClientName = FormField::factory()->create([
@@ -234,9 +241,15 @@ class DatabaseSeeder extends Seeder
             'label' => 'Country',
             'technical_name' => 'country',
             'field_type' => 'select',
-            'options' => ['MA', 'FR', 'ES'],
             'display_order' => 3,
         ]);
+
+        // Options du champ "Country" - table field_options plutot que
+        // JSON (voir LISEZMOI Etape 4bis) : chaque option est
+        // desactivable / reordonnable independamment.
+        FieldOption::factory()->create(['form_field_id' => $fieldCountry->id, 'value' => 'MA', 'label' => 'Maroc', 'display_order' => 1, 'is_default' => true, 'created_by' => $ceo->id]);
+        FieldOption::factory()->create(['form_field_id' => $fieldCountry->id, 'value' => 'FR', 'label' => 'France', 'display_order' => 2, 'created_by' => $ceo->id]);
+        FieldOption::factory()->create(['form_field_id' => $fieldCountry->id, 'value' => 'ES', 'label' => 'Espagne', 'display_order' => 3, 'created_by' => $ceo->id]);
 
         // ---------------------------------------------------------------
         // Transitions & Conditions (BR-20 a BR-23)

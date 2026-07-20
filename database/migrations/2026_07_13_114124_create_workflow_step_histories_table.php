@@ -38,6 +38,15 @@ return new class extends Migration
                   ->nullOnDelete()
                   ->cascadeOnUpdate();
 
+            // Quel utilisateur a declenche ce changement d'etape (une
+            // Validation en general - nullable car la toute premiere
+            // etape est atteinte automatiquement a la soumission, sans
+            // action de validation).
+            $table->foreignId('triggered_by')
+                  ->nullable()
+                  ->constrained('users')
+                  ->nullOnDelete();
+
             $table->timestamp('entered_at');
             $table->timestamp('left_at')->nullable();
 

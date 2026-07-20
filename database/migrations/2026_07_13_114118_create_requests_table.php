@@ -68,6 +68,7 @@ return new class extends Migration
             $table->unsignedInteger('workflow_version');
 
             $table->string('status', 20)->default('Draft');
+            $table->index('status');
 
             $table->timestamp('submitted_at')->nullable();
             $table->timestamp('completed_at')->nullable();

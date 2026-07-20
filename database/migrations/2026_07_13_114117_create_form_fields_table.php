@@ -49,7 +49,6 @@ return new class extends Migration
             $table->string('placeholder')->nullable();
             $table->string('default_value')->nullable();
             $table->text('validation_rules')->nullable();
-            $table->json('options')->nullable();
 
             // Status
             $table->boolean('is_active')->default(true);

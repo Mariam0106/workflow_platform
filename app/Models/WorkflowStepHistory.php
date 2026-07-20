@@ -65,6 +65,8 @@ class WorkflowStepHistory extends Model
 
         'workflow_transition_id',
 
+        'triggered_by',
+
         'entered_at',
 
         'left_at',
@@ -119,6 +121,16 @@ class WorkflowStepHistory extends Model
     public function workflowTransition(): BelongsTo
     {
         return $this->belongsTo(WorkflowTransition::class);
+    }
+
+    /**
+     * User whose action (usually a Validation) triggered this step
+     * change. Nullable: the first Step is entered automatically at
+     * submission, with no user action involved.
+     */
+    public function triggeredBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'triggered_by');
     }
 
     /*-------------------------------------------------------------------------

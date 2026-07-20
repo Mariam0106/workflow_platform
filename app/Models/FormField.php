@@ -87,8 +87,6 @@ class FormField extends Model
 
         'validation_rules',
 
-        'options',
-
         'display_order',
 
         'is_required',
@@ -110,8 +108,6 @@ class FormField extends Model
             'is_required' => 'boolean',
 
             'is_active' => 'boolean',
-
-            'options' => 'array',
 
             'created_at' => 'datetime',
 
@@ -144,6 +140,15 @@ class FormField extends Model
     public function requestValues(): HasMany
     {
         return $this->hasMany(RequestValue::class);
+    }
+
+    /**
+     * Selectable options for this field (Select/Radio/Checkbox/
+     * MultiSelect - replaces the previous JSON "options" column).
+     */
+    public function fieldOptions(): HasMany
+    {
+        return $this->hasMany(FieldOption::class)->orderBy('display_order');
     }
 
     /*-------------------------------------------------------------------------

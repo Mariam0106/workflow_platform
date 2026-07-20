@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -76,6 +77,8 @@ class WorkflowCategory extends Model
         'description',
         'is_active',
 
+        'created_by',
+        'updated_by',
     ];
 
     /*-------------------------------------------------------------------------
@@ -148,4 +151,21 @@ class WorkflowCategory extends Model
     {
         return ! $this->is_active;
     }
+
+    /**
+     * User who created this configuration record.
+     */
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * User who last modified this configuration record.
+     */
+    public function updatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
 }
