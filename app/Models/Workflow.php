@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\WorkflowStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -80,8 +79,6 @@ class Workflow extends Model
 
         'workflow_category_id',
 
-        'code',
-
         'name',
 
         'description',
@@ -90,9 +87,9 @@ class Workflow extends Model
 
         'status',
 
-        'published_at',
+        'published_by',
 
-        'is_default',
+        'published_at',
 
         'is_active',
 
@@ -108,13 +105,7 @@ class Workflow extends Model
 
             'version' => 'integer',
 
-            'status' => WorkflowStatus::class,
-
-            'is_default' => 'boolean',
-
             'is_active' => 'boolean',
-
-            'published_at' => 'datetime',
 
             'created_at' => 'datetime',
 
@@ -135,6 +126,14 @@ class Workflow extends Model
     public function workflowCategory(): BelongsTo
     {
         return $this->belongsTo(WorkflowCategory::class);
+    }
+
+    /**
+     * User who published this workflow.
+     */
+    public function publisher(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'published_by');
     }
 
     /**
@@ -175,7 +174,7 @@ class Workflow extends Model
      */
     public function scopePublished(Builder $query): Builder
     {
-        return $query->where('status', WorkflowStatus::Published);
+        return $query->where('status', 'Published');
     }
 
     /**
@@ -183,7 +182,7 @@ class Workflow extends Model
      */
     public function scopeDraft(Builder $query): Builder
     {
-        return $query->where('status', WorkflowStatus::Draft);
+        return $query->where('status', 'Draft');
     }
 
     /**
@@ -191,7 +190,7 @@ class Workflow extends Model
      */
     public function scopeArchived(Builder $query): Builder
     {
-        return $query->where('status', WorkflowStatus::Archived);
+        return $query->where('status', 'Archived');
     }
 
     /**
@@ -211,7 +210,7 @@ class Workflow extends Model
      */
     public function isPublished(): bool
     {
-        return $this->status === WorkflowStatus::Published;
+        return $this->status === 'Published';
     }
 
     /**
@@ -219,7 +218,7 @@ class Workflow extends Model
      */
     public function isDraft(): bool
     {
-        return $this->status === WorkflowStatus::Draft;
+        return $this->status === 'Draft';
     }
 
     /**
@@ -227,7 +226,7 @@ class Workflow extends Model
      */
     public function isArchived(): bool
     {
-        return $this->status === WorkflowStatus::Archived;
+        return $this->status === 'Archived';
     }
 
     /**
