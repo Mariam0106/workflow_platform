@@ -108,7 +108,7 @@ class DatabaseSeeder extends Seeder
             'manager_id' => null,
             'first_name' => 'Amina',
             'last_name' => 'Benali',
-            'email' => 'amina.benali@example.com',
+            'email' => 'amina.benali@saint-gobain.com',
         ]);
 
         $financeManager = User::factory()->create([
@@ -119,7 +119,7 @@ class DatabaseSeeder extends Seeder
             'manager_id' => $ceo->id,
             'first_name' => 'Karim',
             'last_name' => 'Idrissi',
-            'email' => 'karim.idrissi@example.com',
+            'email' => 'karim.idrissi@saint-gobain.com',
         ]);
 
         $employee = User::factory()->create([
@@ -130,7 +130,7 @@ class DatabaseSeeder extends Seeder
             'manager_id' => $financeManager->id,
             'first_name' => 'Sara',
             'last_name' => 'Toumi',
-            'email' => 'sara.toumi@example.com',
+            'email' => 'sara.toumi@saint-gobain.com',
         ]);
 
         $complianceOfficer = User::factory()->create([
@@ -141,7 +141,7 @@ class DatabaseSeeder extends Seeder
             'manager_id' => $financeManager->id,
             'first_name' => 'Youssef',
             'last_name' => 'Amrani',
-            'email' => 'youssef.amrani@example.com',
+            'email' => 'youssef.amrani@saint-gobain.com',
         ]);
 
         // ---------------------------------------------------------------
