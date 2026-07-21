@@ -41,7 +41,11 @@ class UserFactory extends Factory
             'manager_id' => null,
             'first_name' => fake()->firstName(),
             'last_name' => fake()->lastName(),
-            'email' => fake()->unique()->safeEmail(),
+            // BR-08 : safeEmail() renvoie @example.com/.org/.net, qui ne
+            // passe plus la validation du VO CompanyEmail une fois
+            // WORKFLOW_COMPANY_EMAIL_DOMAINS configure (Jalon J1) - on
+            // genere donc directement une adresse dans le domaine autorise.
+            'email' => Str::slug(fake()->unique()->userName(), '.') . '@saint-gobain.com',
             'phone' => '+' . fake()->numerify('##########'),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
