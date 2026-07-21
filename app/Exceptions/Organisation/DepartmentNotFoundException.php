@@ -16,7 +16,6 @@ class DepartmentNotFoundException extends OrganisationException
         return new self(
             message: "Département [{$id}] introuvable.",
             errorCode: 'department_not_found',
-            status: 404,
             context: ['department_id' => $id],
         );
     }
@@ -26,8 +25,13 @@ class DepartmentNotFoundException extends OrganisationException
         return new self(
             message: "Le département [{$departmentId}] n'a pas de responsable configuré.",
             errorCode: 'department_manager_not_configured',
-            status: 422,
             context: ['department_id' => $departmentId],
+            httpStatus: 422,
         );
+    }
+
+    protected function defaultHttpStatus(): int
+    {
+        return 404;
     }
 }

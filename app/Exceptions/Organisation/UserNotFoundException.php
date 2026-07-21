@@ -15,7 +15,6 @@ class UserNotFoundException extends OrganisationException
         return new self(
             message: "User [{$id}] introuvable.",
             errorCode: 'user_not_found',
-            status: 404,
             context: ['user_id' => $id],
         );
     }
@@ -25,7 +24,6 @@ class UserNotFoundException extends OrganisationException
         return new self(
             message: "Aucun utilisateur trouvé pour l'adresse [{$email}].",
             errorCode: 'user_not_found',
-            status: 404,
             context: ['email' => $email],
         );
     }
@@ -33,16 +31,25 @@ class UserNotFoundException extends OrganisationException
     /**
      * BR-03/04/05/06 helpers rely on the manager relationship (N+1).
      * Distinct error code from withId(): here the User exists but has
-     * no manager configured, which is a data/config problem, not a
-     * plain "not found".
+     * no manager configured, which is a data/config problem (422), not
+     * a plain "not found" (404) - hence the httpStatus override.
      */
     public static function managerNotConfigured(int $userId): self
     {
         return new self(
             message: "L'utilisateur [{$userId}] n'a pas de responsable hiérarchique (N+1) configuré.",
             errorCode: 'user_manager_not_configured',
-            status: 422,
             context: ['user_id' => $userId],
+            httpStatus: 422,
         );
+    }
+
+    /**
+     * Default: "not found" - the most common case for this class.
+     * managerNotConfigured() overrides it to 422 (see above).
+     */
+    protected function defaultHttpStatus(): int
+    {
+        return 404;
     }
 }

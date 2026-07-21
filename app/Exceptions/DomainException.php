@@ -6,87 +6,93 @@ namespace App\Exceptions;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use RuntimeException;
 
 /**
  * ==========================================================================
- * Domain Exception (base)
+ * DomainException (base commune - PARTAGEE entre Organisation et Workflow)
  * ==========================================================================
  *
- * Common ancestor for every business/domain exception thrown by the
- * platform, regardless of module.
+ * IMPORTANT : ce fichier est PARTAGE entre les deux domaines du projet
+ * (Organisation et Workflow). Il ne doit exister qu'UNE seule fois dans
+ * le projet, ici. Le collegue qui travaille sur le domaine Organisation
+ * doit etendre CETTE classe pour ses propres exceptions
+ * (app/Exceptions/Organisation/*), jamais en recreer une autre.
  *
- * Rule (shared, see docs "Règles de répartition du travail", section 3) :
- * this class is built ONCE, together, before either module starts its
- * Étape 5. Nobody edits this file afterwards - each module only adds its
- * own subclasses:
- *
- *   App\Exceptions\Organisation\*   (UserNotFoundException, ...)
- *   App\Exceptions\Workflow\*       (WorkflowNotFoundException, ...)
- *
- * Responsibilities
  * --------------------------------------------------------------------------
- * • Carry a machine-readable error code, independent of the HTTP status.
- * • Carry an optional context array (for logs / audit trail).
- * • Know how to render itself as a JSON API response.
- *
+ * Regle d'or (Etape 5 du roadmap)
+ * --------------------------------------------------------------------------
+ * Un Service ne retourne JAMAIS `false`/`null` pour signaler un echec
+ * metier - il leve une DomainException. Le Controller (Etape 12) attrape
+ * DomainException une seule fois, generique, et laisse chaque sous-classe
+ * dire elle-meme quel code HTTP et quel code d'erreur stable renvoyer
+ * (grace a render() ci-dessous, une convention Laravel : si l'exception
+ * definit render(), le Handler global l'appelle automatiquement - aucun
+ * cablage supplementaire necessaire dans bootstrap/app.php).
  * ==========================================================================
  */
-abstract class DomainException extends \Exception
+abstract class DomainException extends RuntimeException
 {
     /**
-     * Extra structured data about the failure (ids, attempted values...).
-     * Never put sensitive data here (passwords, tokens).
-     *
-     * @var array<string, mixed>
+     * @param  string  $message    Message humain, sûr à afficher tel quel.
+     * @param  string  $errorCode  Code stable, machine-readable (ex:
+     *                             "workflow.no_eligible_transition"),
+     *                             utilisé par le frontend/l'API pour
+     *                             réagir sans parser le message.
+     * @param  array<string, mixed>  $context  Données utiles au
+     *                             débogage/log (jamais affichées telles
+     *                             quelles à l'utilisateur final).
+     * @param  int|null  $httpStatus  Surcharge ponctuelle du status HTTP
+     *                             par défaut de la classe (voir
+     *                             defaultHttpStatus()) - permet à deux
+     *                             constructeurs nommés de la même classe
+     *                             de renvoyer des status différents
+     *                             (ex: "form non publié" = 422, mais
+     *                             "validateur non autorisé" = 403).
      */
-    protected array $context = [];
-
-    public function __construct(string $message, protected string $errorCode, protected int $status = 400, array $context = [])
-    {
+    public function __construct(
+        string $message,
+        protected readonly string $errorCode,
+        protected readonly array $context = [],
+        protected readonly ?int $httpStatus = null,
+    ) {
         parent::__construct($message);
-
-        $this->context = $context;
     }
 
-    /**
-     * Machine-readable error code (e.g. "user_not_found").
-     * Stable across releases - front-end / API consumers may switch on it.
-     */
     public function errorCode(): string
     {
         return $this->errorCode;
     }
 
-    /**
-     * HTTP status code to use when this exception reaches the API layer.
-     */
-    public function status(): int
-    {
-        return $this->status;
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
     public function context(): array
     {
         return $this->context;
     }
 
     /**
-     * Renders the exception as a JSON API response.
-     *
-     * Laravel calls render() automatically if it exists on the exception,
-     * so Controllers never need to catch these by hand.
+     * HTTP status to use when this exception reaches an API boundary.
+     * Uses the per-instance override if provided, otherwise falls back
+     * to the class-level default.
+     */
+    public function httpStatus(): int
+    {
+        return $this->httpStatus ?? $this->defaultHttpStatus();
+    }
+
+    /**
+     * Each concrete exception class defines its own sensible default.
+     */
+    abstract protected function defaultHttpStatus(): int;
+
+    /**
+     * Laravel convention: if an exception defines render(), the global
+     * Handler calls it automatically instead of the generic 500 page.
      */
     public function render(Request $request): JsonResponse
     {
         return response()->json([
-            'error' => [
-                'code' => $this->errorCode,
-                'message' => $this->getMessage(),
-                'context' => $this->context,
-            ],
-        ], $this->status);
+            'error' => $this->errorCode(),
+            'message' => $this->getMessage(),
+        ], $this->httpStatus());
     }
 }

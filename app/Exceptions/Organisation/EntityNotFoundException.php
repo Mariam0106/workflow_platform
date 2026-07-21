@@ -15,7 +15,6 @@ class EntityNotFoundException extends OrganisationException
         return new self(
             message: "Entité [{$id}] introuvable.",
             errorCode: 'entity_not_found',
-            status: 404,
             context: ['entity_id' => $id],
         );
     }
@@ -25,8 +24,13 @@ class EntityNotFoundException extends OrganisationException
         return new self(
             message: "L'entité [{$entityId}] n'a pas de responsable configuré.",
             errorCode: 'entity_manager_not_configured',
-            status: 422,
             context: ['entity_id' => $entityId],
+            httpStatus: 422,
         );
+    }
+
+    protected function defaultHttpStatus(): int
+    {
+        return 404;
     }
 }
