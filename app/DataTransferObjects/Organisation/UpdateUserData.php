@@ -6,7 +6,7 @@ namespace App\DataTransferObjects\Organisation;
 
 /**
  * ==========================================================================
- * UpdateUserDTO
+ * UpdateUserData
  * ==========================================================================
  *
  * Partial update: only the fields actually present in the source array are
@@ -20,7 +20,7 @@ namespace App\DataTransferObjects\Organisation;
  * fields the form actually submitted.
  * ==========================================================================
  */
-final readonly class UpdateUserDTO
+final readonly class UpdateUserData
 {
     /**
      * @param array<string, mixed> $provided raw payload as provided by the

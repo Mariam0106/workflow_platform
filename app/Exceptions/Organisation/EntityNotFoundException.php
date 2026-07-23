@@ -29,6 +29,19 @@ class EntityNotFoundException extends OrganisationException
         );
     }
 
+    /**
+     * BR-09 : archived Entities cannot receive new Users.
+     */
+    public static function archived(int $entityId): self
+    {
+        return new self(
+            message: "L'entité [{$entityId}] est archivée et ne peut pas recevoir de nouveaux utilisateurs.",
+            errorCode: 'entity_archived',
+            context: ['entity_id' => $entityId],
+            httpStatus: 422,
+        );
+    }
+
     protected function defaultHttpStatus(): int
     {
         return 404;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Organisation\Auth;
 
-use App\DataTransferObjects\Organisation\CreateUserDTO;
+use App\DataTransferObjects\Organisation\CreateUserData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Organisation\Auth\RegisterUserRequest;
 use App\Models\ApplicationRole;
@@ -12,9 +12,9 @@ use App\Models\BusinessFunction;
 use App\Models\Department;
 use App\Models\Entity;
 use App\Models\User;
+use App\Services\Organisation\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 /**
@@ -27,18 +27,20 @@ use Illuminate\View\View;
  * @saint-gobain.com" (cahier des charges).
  *
  * Deliberately basic UI - the polished Admin/BackOffice screens for user
- * management come later (Étape 13/14). This only has to be functionally
- * correct so Lali can build Policies/Controllers against a real,
- * authenticated User (Jalon J2/J3).
+ * management come later (Étape 13/14).
  *
- * NOTE (Étape 6) : building goes through CreateUserDTO now instead of a
- * raw array, so the day UserService::register() exists (Étape 8), this
- * store() method shrinks to a single call - only the DTO travels down,
- * never $request->validated() directly.
+ * (Étape 8) : passe maintenant par UserService::register(), qui centralise
+ * le hash du mot de passe et les garde-fous métier (BR-09 : Entité/
+ * Département actifs). Le Controller ne fait plus que la validation HTTP
+ * et la redirection.
  * ==========================================================================
  */
 class RegisteredUserController extends Controller
 {
+    public function __construct(
+        private readonly UserService $userService,
+    ) {}
+
     public function create(): View
     {
         return view('auth.register', [
@@ -52,15 +54,9 @@ class RegisteredUserController extends Controller
 
     public function store(RegisterUserRequest $request): RedirectResponse
     {
-        $dto = CreateUserDTO::fromArray($request->validated());
+        $dto = CreateUserData::fromArray($request->validated());
 
-        // TODO (Étape 8) : remplacer par UserService::register($dto), qui
-        // encapsulera le Hash::make() et la création en un seul endroit
-        // partagé (Admin "create user" utilisera le même Service).
-        $user = User::query()->create([
-            ...$dto->toArray(),
-            'password' => Hash::make($dto->password),
-        ]);
+        $user = $this->userService->register($dto);
 
         Auth::login($user);
 

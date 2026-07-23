@@ -6,10 +6,10 @@ namespace App\DataTransferObjects\Organisation;
 
 /**
  * ==========================================================================
- * DepartmentDTO
+ * DepartmentData
  * ==========================================================================
  *
- * Unlike CreateUserDTO/UpdateUserDTO, a Department has few enough fields
+ * Unlike CreateUserData/UpdateUserData, a Department has few enough fields
  * that a single DTO covers both create and update: `id` is null on
  * creation, set on update (the Service/Repository decides which query to
  * run based on its presence - see DepartmentService, Étape 8).
@@ -20,7 +20,7 @@ namespace App\DataTransferObjects\Organisation;
  * being valid).
  * ==========================================================================
  */
-final readonly class DepartmentDTO
+final readonly class DepartmentData
 {
     public function __construct(
         public int $entityId,

@@ -6,7 +6,7 @@ namespace App\DataTransferObjects\Organisation;
 
 /**
  * ==========================================================================
- * CreateUserDTO
+ * CreateUserData
  * ==========================================================================
  *
  * Carries the data needed to create a User, from the Controller/Request
@@ -28,7 +28,7 @@ namespace App\DataTransferObjects\Organisation;
  *        re-validated here - this DTO trusts its caller already validated).
  * ==========================================================================
  */
-final readonly class CreateUserDTO
+final readonly class CreateUserData
 {
     public function __construct(
         public int $entityId,

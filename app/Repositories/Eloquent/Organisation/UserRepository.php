@@ -7,8 +7,8 @@ namespace App\Repositories\Eloquent\Organisation;
 use App\Contracts\Repositories\Organisation\DepartmentRepositoryInterface;
 use App\Contracts\Repositories\Organisation\EntityRepositoryInterface;
 use App\Contracts\Repositories\Organisation\UserRepositoryInterface;
-use App\DataTransferObjects\Organisation\CreateUserDTO;
-use App\DataTransferObjects\Organisation\UpdateUserDTO;
+use App\DataTransferObjects\Organisation\CreateUserData;
+use App\DataTransferObjects\Organisation\UpdateUserData;
 use App\Enums\ApplicationRoleCode;
 use App\Exceptions\Organisation\UserNotFoundException;
 use App\Models\User;
@@ -194,7 +194,7 @@ class UserRepository implements UserRepositoryInterface
     /**
      * {@inheritDoc}
      *
-     * Creates a new User from a CreateUserDTO.
+     * Creates a new User from a CreateUserData.
      *
      * NOTE: the DTO carries the password in clear text on purpose - the
      * User model's `password` cast is `'hashed'`, which auto-hashes on
@@ -203,7 +203,7 @@ class UserRepository implements UserRepositoryInterface
      * exists (Étape 8), it should own that decision explicitly rather
      * than relying on the implicit cast.
      */
-    public function createFromDto(CreateUserDTO $dto): User
+    public function createFromData(CreateUserData $dto): User
     {
         return $this->model->newQuery()->create($dto->toArray());
     }
@@ -211,15 +211,15 @@ class UserRepository implements UserRepositoryInterface
     /**
      * {@inheritDoc}
      *
-     * Updates an existing User from an UpdateUserDTO.
+     * Updates an existing User from an UpdateUserData.
      *
      * Only the fields actually present in the DTO are applied
-     * (see UpdateUserDTO::toArray() logic — it filters on keys
+     * (see UpdateUserData::toArray() logic — it filters on keys
      * that were provided, not on null values).
      *
      * @throws UserNotFoundException
      */
-    public function updateFromDto(int $id, UpdateUserDTO $dto): User
+    public function updateFromData(int $id, UpdateUserData $dto): User
     {
         $user = $this->findById($id);
 

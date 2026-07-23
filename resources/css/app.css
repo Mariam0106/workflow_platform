@@ -6,6 +6,16 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Identité Saint-Gobain Workflow Platform - voir brief design */
+    --color-brand-blue: #005bbb;
+    --color-brand-blue-dark: #004a99;
+    --color-brand-navy: #0f172a;
+    --color-brand-bg: #f8fafc;
+    --color-brand-border: #e5e7eb;
+    --color-brand-success: #16a34a;
+    --color-brand-warning: #f59e0b;
+    --color-brand-danger: #dc2626;
 }
