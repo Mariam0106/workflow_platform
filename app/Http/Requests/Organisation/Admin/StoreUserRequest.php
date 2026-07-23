@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\Organisation\Auth;
+namespace App\Http\Requests\Organisation\Admin;
 
 use App\Http\Requests\Organisation\Concerns\ValidatesCompanyEmailDomain;
 use App\Models\ApplicationRole;
@@ -16,36 +16,22 @@ use Illuminate\Validation\Rules\Password;
 
 /**
  * ==========================================================================
- * RegisterUserRequest
+ * StoreUserRequest (BackOffice - Étape 13)
  * ==========================================================================
  *
- * Validates the registration form (Jalon J1 - auth minimale).
- *
- * Business Rules covered
- * --------------------------------------------------------------------------
- * BR-03  Every User belongs to exactly one Entity.
- * BR-04  Every User belongs to exactly one Department.
- * BR-05  Every User has exactly one Business Function.
- * BR-06  Every User has exactly one Application Role.
- * BR-08  Company email is mandatory (restricted to the configured
- *        domain(s), e.g. @saint-gobain.com - see config/workflow.php).
- *
- * NOTE : the domain restriction is validated twice on purpose:
- *  - here, with a clean Form Request rule -> good UX, a proper "email"
- *    field error message instead of a generic 500.
- *  - again in App\ValueObjects\CompanyEmail when the Model persists ->
- *    the real, non-bypassable guarantee (BR-08), in case this Request is
- *    ever skipped (Tinker, Seeder, future API...).
+ * Admin-initiated User creation - UserController::store() ->
+ * UserService::createByAdmin(). Same core rules as the public
+ * RegisterUserRequest (Jalon J1), plus is_active (an Admin may create a
+ * pre-deactivated account, e.g. onboarding ahead of someone's start date).
  * ==========================================================================
  */
-class RegisterUserRequest extends FormRequest
+class StoreUserRequest extends FormRequest
 {
     use ValidatesCompanyEmailDomain;
 
     public function authorize(): bool
     {
-        // Registration is public - anyone with a company email may sign up.
-        return true;
+        return $this->user()->can('create', User::class);
     }
 
     /**
@@ -58,15 +44,14 @@ class RegisterUserRequest extends FormRequest
             'last_name' => ['required', 'string', 'max:100'],
 
             'email' => [
-                'required',
-                'string',
-                'email',
-                'max:255',
+                'required', 'string', 'email', 'max:255',
                 Rule::unique(User::class, 'email'),
                 $this->companyEmailDomainRule(),
             ],
 
             'phone' => ['nullable', 'string', 'max:30'],
+            'employee_number' => ['nullable', 'string', 'max:30'],
+            'job_title' => ['nullable', 'string', 'max:150'],
 
             'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()],
 
@@ -74,20 +59,9 @@ class RegisterUserRequest extends FormRequest
             'department_id' => ['required', 'integer', Rule::exists(Department::class, 'id')->where('is_active', true)],
             'business_function_id' => ['required', 'integer', Rule::exists(BusinessFunction::class, 'id')->where('is_active', true)],
             'application_role_id' => ['required', 'integer', Rule::exists(ApplicationRole::class, 'id')->where('is_active', true)],
-
-            // Nullable: only the top of the hierarchy has no manager (BR unspecified for root, deliberately allowed).
             'manager_id' => ['nullable', 'integer', Rule::exists(User::class, 'id')],
-        ];
-    }
 
-    /**
-     * @return array<string, string>
-     */
-    public function messages(): array
-    {
-        return [
-            'email.unique' => 'Un compte existe déjà avec cette adresse e-mail.',
-            'password.confirmed' => 'La confirmation du mot de passe ne correspond pas.',
+            'is_active' => ['boolean'],
         ];
     }
 }
