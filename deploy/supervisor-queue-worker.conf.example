@@ -1,0 +1,36 @@
+; ==============================================================================
+; Supervisor config - Workflow Platform queue worker (Étape 12 - Infrastructure)
+; ==============================================================================
+;
+; Pourquoi ce fichier existe : QUEUE_CONNECTION=database (voir .env) veut dire
+; que les Jobs mis en queue (ex: futurs emails déclenchés par UserCreated/
+; DepartmentCreated - Étape 9, ou les Listeners de Mariam à venir) ne
+; s'exécutent JAMAIS tout seuls. Il faut un processus `php artisan queue:work`
+; qui tourne en continu et redémarre s'il crashe - c'est le rôle de Supervisor.
+;
+; Installation (serveur Linux) :
+;   sudo apt install supervisor
+;   sudo cp deploy/supervisor-queue-worker.conf.example /etc/supervisor/conf.d/workflow-platform-worker.conf
+;   # Adapter les chemins ci-dessous à l'environnement réel avant de copier.
+;   sudo supervisorctl reread
+;   sudo supervisorctl update
+;   sudo supervisorctl start workflow-platform-worker:*
+;
+; En local (dev), pas besoin de Supervisor : lancer simplement
+;   php artisan queue:work
+; dans un terminal à part pendant que vous testez.
+; ==============================================================================
+
+[program:workflow-platform-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /var/www/workflow_platform/artisan queue:work database --sleep=3 --tries=3 --max-time=3600
+directory=/var/www/workflow_platform
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user=www-data
+numprocs=2
+redirect_stderr=true
+stdout_logfile=/var/www/workflow_platform/storage/logs/worker.log
+stopwaitsecs=3600
