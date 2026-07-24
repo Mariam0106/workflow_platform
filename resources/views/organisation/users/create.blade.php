@@ -1,7 +1,7 @@
 @extends('layouts.admin', ['title' => 'Nouvel utilisateur'])
 
 @section('content')
-    <h1 class="mb-6 text-lg font-semibold">Nouvel utilisateur</h1>
+    <x-page-header title="Nouvel utilisateur" description="Créer un compte pour un collaborateur." />
 
     @if ($errors->any())
         <div class="mb-5 rounded-lg border border-red-200 bg-red-50 p-3.5 text-sm text-red-700">
@@ -17,8 +17,6 @@
         @csrf
         @include('organisation.users._form', ['user' => null])
 
-        <button type="submit" class="rounded-lg bg-brand-blue px-4 py-2 text-sm font-semibold text-white hover:bg-brand-blue-dark">
-            Créer
-        </button>
+        <x-button type="submit">Créer</x-button>
     </form>
 @endsection

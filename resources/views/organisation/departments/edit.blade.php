@@ -1,7 +1,7 @@
 @extends('layouts.admin', ['title' => 'Modifier département'])
 
 @section('content')
-    <h1 class="mb-6 text-lg font-semibold">Modifier « {{ $department->name }} »</h1>
+    <x-page-header title="{{ $department->name }}" description="Modifier le département." />
 
     @if ($errors->any())
         <div class="mb-5 rounded-lg border border-red-200 bg-red-50 p-3.5 text-sm text-red-700">
@@ -13,6 +13,6 @@
         @csrf
         @method('PUT')
         @include('organisation.departments._form', ['department' => $department])
-        <button type="submit" class="rounded-lg bg-brand-blue px-4 py-2 text-sm font-semibold text-white hover:bg-brand-blue-dark">Enregistrer</button>
+        <x-button type="submit">Enregistrer</x-button>
     </form>
 @endsection
