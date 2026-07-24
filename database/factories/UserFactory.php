@@ -41,7 +41,13 @@ class UserFactory extends Factory
             'manager_id' => null,
             'first_name' => fake()->firstName(),
             'last_name' => fake()->lastName(),
-            'email' => fake()->unique()->safeEmail(),
+            // BR-08 : safeEmail() renvoie @example.com/.org/.net, qui ne
+            // passe plus la validation du VO CompanyEmail une fois
+            // WORKFLOW_COMPANY_EMAIL_DOMAINS configure - on genere donc
+            // une adresse dans le domaine configure (ou un domaine
+            // d'exemple neutre si aucun n'est configure). Trouve grace
+            // au meme bug detecte independamment cote Organisation.
+            'email' => Str::slug(fake()->unique()->userName(), '.') . '@' . (config('workflow.company_email_domains.0') ?? 'workflow-platform.test'),
             'phone' => '+' . fake()->numerify('##########'),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),

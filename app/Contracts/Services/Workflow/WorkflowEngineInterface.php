@@ -6,9 +6,9 @@ namespace App\Contracts\Services\Workflow;
 
 use App\DataTransferObjects\Workflow\RecordValidationData;
 use App\DataTransferObjects\Workflow\SubmitRequestData;
-use App\Exceptions\Workflow\RequestException;
-use App\Exceptions\Workflow\TransitionException;
-use App\Exceptions\Workflow\ValidationException;
+use App\Exceptions\Workflow\FormNotPublishedException;
+use App\Exceptions\Workflow\InvalidTransitionException;
+use App\Exceptions\Workflow\ValidationNotAllowedException;
 use App\Models\Request;
 use App\Models\Validation;
 
@@ -30,7 +30,7 @@ interface WorkflowEngineInterface
      * sur la premiere Step (is_start) du Workflow resolu en derniere
      * version publiee (BR-25).
      *
-     * @throws RequestException si le Form n'est pas publie (BR-28).
+     * @throws FormNotPublishedException si le Form n'est pas publie (BR-28).
      */
     public function submit(SubmitRequestData $data): Request;
 
@@ -40,9 +40,9 @@ interface WorkflowEngineInterface
      * (BR-21/22/23) et avance la Request vers le Step suivant.
      * Si Rejected, cloture immediatement le Workflow (BR-39).
      *
-     * @throws ValidationException si l'utilisateur n'est pas le
+     * @throws ValidationNotAllowedException si l'utilisateur n'est pas le
      *                              Validateur attendu pour ce Step (BR-36).
-     * @throws TransitionException si aucune Transition eligible n'est
+     * @throws InvalidTransitionException si aucune Transition eligible n'est
      *                              trouvee alors que la Request doit avancer.
      */
     public function recordValidation(RecordValidationData $data): Validation;

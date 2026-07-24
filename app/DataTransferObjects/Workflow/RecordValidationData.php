@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\DataTransferObjects\Workflow;
 
 use App\Enums\ValidationDecision;
-use App\Exceptions\Workflow\ValidationException;
+use App\Exceptions\Workflow\ValidationNotAllowedException;
 use Illuminate\Http\Request as HttpRequest;
 
 /**
@@ -30,7 +30,7 @@ final readonly class RecordValidationData
         public ?string $comment = null,
     ) {
         if ($this->decision === ValidationDecision::Rejected && ($this->comment === null || trim($this->comment) === '')) {
-            throw ValidationException::missingRejectComment();
+            throw ValidationNotAllowedException::missingRejectComment();
         }
     }
 
