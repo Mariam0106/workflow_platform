@@ -7,11 +7,13 @@ namespace App\Providers;
 use App\Contracts\Repositories\Workflow\FormRepositoryInterface;
 use App\Contracts\Repositories\Workflow\RequestRepositoryInterface;
 use App\Contracts\Repositories\Workflow\WorkflowRepositoryInterface;
+use App\Contracts\Services\Workflow\NotificationSenderInterface;
 use App\Contracts\Services\Workflow\OrganisationManagerResolverInterface;
 use App\Contracts\Services\Workflow\WorkflowEngineInterface;
 use App\Repositories\Eloquent\Workflow\FormRepository;
 use App\Repositories\Eloquent\Workflow\RequestRepository;
 use App\Repositories\Eloquent\Workflow\WorkflowRepository;
+use App\Services\Workflow\MailNotificationSender;
 use App\Services\Workflow\Placeholders\NullOrganisationManagerResolver;
 use App\Services\Workflow\WorkflowEngineService;
 use Illuminate\Support\ServiceProvider;
@@ -51,6 +53,7 @@ class WorkflowServiceProvider extends ServiceProvider
         FormRepositoryInterface::class => FormRepository::class,
         RequestRepositoryInterface::class => RequestRepository::class,
         OrganisationManagerResolverInterface::class => NullOrganisationManagerResolver::class,
+        NotificationSenderInterface::class => MailNotificationSender::class,
         WorkflowEngineInterface::class => WorkflowEngineService::class,
     ];
 
