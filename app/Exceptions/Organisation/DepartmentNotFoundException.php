@@ -30,6 +30,19 @@ class DepartmentNotFoundException extends OrganisationException
         );
     }
 
+    /**
+     * BR-09 : archived Departments cannot receive new Users.
+     */
+    public static function archived(int $departmentId): self
+    {
+        return new self(
+            message: "Le département [{$departmentId}] est archivé et ne peut pas recevoir de nouveaux utilisateurs.",
+            errorCode: 'department_archived',
+            context: ['department_id' => $departmentId],
+            httpStatus: 422,
+        );
+    }
+
     protected function defaultHttpStatus(): int
     {
         return 404;

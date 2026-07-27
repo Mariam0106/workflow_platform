@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Contracts\Repositories\Organisation;
 
-use App\DataTransferObjects\Organisation\CreateUserDTO;
-use App\DataTransferObjects\Organisation\UpdateUserDTO;
+use App\DataTransferObjects\Organisation\CreateUserData;
+use App\DataTransferObjects\Organisation\UpdateUserData;
 use App\Enums\ApplicationRoleCode;
 use App\Exceptions\Organisation\UserNotFoundException;
 use App\Models\User;
@@ -138,22 +138,22 @@ interface UserRepositoryInterface
     public function findUsersWithRole(ApplicationRoleCode $role): Collection;
 
     /**
-     * Create a new User from a CreateUserDTO.
+     * Create a new User from a CreateUserData.
      *
      * NOTE: the User model's `password` cast ('hashed') auto-hashes on
      * write, so the DTO may carry a clear-text password safely.
      */
-    public function createFromDto(CreateUserDTO $dto): User;
+    public function createFromData(CreateUserData $dto): User;
 
     /**
-     * Update an existing User from an UpdateUserDTO.
+     * Update an existing User from an UpdateUserData.
      *
      * Only the fields actually present in the DTO are applied
-     * (see UpdateUserDTO::toArray() logic).
+     * (see UpdateUserData::toArray() logic).
      *
      * @throws UserNotFoundException
      */
-    public function updateFromDto(int $id, UpdateUserDTO $dto): User;
+    public function updateFromData(int $id, UpdateUserData $dto): User;
 
     /**
      * Save (create or update) a User.
