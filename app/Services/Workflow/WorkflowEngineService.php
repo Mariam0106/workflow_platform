@@ -12,6 +12,10 @@ use App\DataTransferObjects\Workflow\RecordValidationData;
 use App\DataTransferObjects\Workflow\SubmitRequestData;
 use App\Enums\RequestStatus;
 use App\Enums\ValidationDecision;
+use App\Events\Workflow\RequestApproved;
+use App\Events\Workflow\RequestRejected;
+use App\Events\Workflow\RequestSubmitted;
+use App\Events\Workflow\WorkflowFinished;
 use App\Exceptions\Workflow\FormNotPublishedException;
 use App\Exceptions\Workflow\InvalidRequestStatusException;
 use App\Exceptions\Workflow\ValidationNotAllowedException;
@@ -24,6 +28,7 @@ use App\Models\Validation;
 use App\Models\WorkflowStepHistory;
 use App\ValueObjects\RequestReference;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 
 /**
  * ==========================================================================
@@ -64,7 +69,7 @@ class WorkflowEngineService implements WorkflowEngineInterface
      */
     public function submit(SubmitRequestData $data): Request
     {
-        return DB::transaction(function () use ($data) {
+        $request = DB::transaction(function () use ($data) {
             $form = $this->formRepository->findWithFields($data->formId);
 
             if ($form === null) {
@@ -126,6 +131,13 @@ class WorkflowEngineService implements WorkflowEngineInterface
 
             return $request->fresh(['requestValues', 'currentStep']);
         });
+
+        // Evenement leve APRES le commit de la transaction (jamais dedans) :
+        // un Listener ne doit jamais reagir a des donnees susceptibles
+        // d'etre annulees par un rollback.
+        Event::dispatch(new RequestSubmitted($request));
+
+        return $request;
     }
 
     /**
@@ -146,7 +158,10 @@ class WorkflowEngineService implements WorkflowEngineInterface
      */
     public function recordValidation(RecordValidationData $data): Validation
     {
-        return DB::transaction(function () use ($data) {
+        $wasRejected = false;
+        $justFinished = false;
+
+        $validation = DB::transaction(function () use ($data, &$wasRejected, &$justFinished) {
             $request = $this->requestRepository->findById($data->requestId);
 
             if ($request === null || $request->status !== RequestStatus::Submitted) {
@@ -182,21 +197,41 @@ class WorkflowEngineService implements WorkflowEngineInterface
                     'completed_at' => now(),
                 ]);
 
+                $wasRejected = true;
+
                 return $validation;
             }
 
-            $this->advanceToNextStep($request, $step, $validator);
+            $justFinished = $this->advanceToNextStep($request, $step, $validator);
 
             return $validation;
         });
+
+        // Evenements leves APRES le commit (jamais dans la transaction).
+        $request = $validation->request()->firstOrFail();
+
+        if ($wasRejected) {
+            Event::dispatch(new RequestRejected($request, $validation));
+        } else {
+            Event::dispatch(new RequestApproved($request, $validation));
+
+            if ($justFinished) {
+                Event::dispatch(new WorkflowFinished($request));
+            }
+        }
+
+        return $validation;
     }
 
     /**
      * BR-21/22/23 : selectionne et execute la Transition eligible,
      * avance la Request, et la marque Completed si le nouveau Step est
      * une Step de fin.
+     *
+     * @return bool true si la Request vient d'atteindre son Step de fin
+     *              (le Workflow est acheve).
      */
-    private function advanceToNextStep(Request $request, \App\Models\WorkflowStep $step, User $triggeredBy): void
+    private function advanceToNextStep(Request $request, \App\Models\WorkflowStep $step, User $triggeredBy): bool
     {
         $transition = $this->transitionSelector->select($step, $request->requestValues);
         $nextStep = $transition->toStep;
@@ -220,7 +255,11 @@ class WorkflowEngineService implements WorkflowEngineInterface
                 'status' => RequestStatus::Completed,
                 'completed_at' => now(),
             ]);
+
+            return true;
         }
+
+        return false;
     }
 
     private function closeCurrentStepHistory(Request $request): void
