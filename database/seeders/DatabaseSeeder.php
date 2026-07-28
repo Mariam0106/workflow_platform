@@ -133,6 +133,13 @@ class DatabaseSeeder extends Seeder
             'email' => 'sara.toumi@saint-gobain.com',
         ]);
 
+        // AJOUT (post Étape 12, demande client) : illustre la nouvelle
+        // relation N-N User <-> ApplicationRole - $financeManager reste
+        // actif en tant que Validator (application_role_id inchangé),
+        // mais est désormais également autorisé pour le rôle User. Après
+        // authentification, il se verra proposer un choix entre les deux.
+        $financeManager->authorizedRoles()->sync([$roleValidator->id, $roleUser->id]);
+
         $complianceOfficer = User::factory()->create([
             'entity_id' => $hq->id,
             'department_id' => $financeDept->id,

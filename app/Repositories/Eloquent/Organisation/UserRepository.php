@@ -205,7 +205,17 @@ class UserRepository implements UserRepositoryInterface
      */
     public function createFromData(CreateUserData $dto): User
     {
-        return $this->model->newQuery()->create($dto->toArray());
+        $user = $this->model->newQuery()->create($dto->toArray());
+
+        // AJOUT (post Étape 12, demande client) : synchronise les rôles
+        // autorisés (N-N). $dto->roleIds vide -> le User n'est autorisé
+        // que pour son rôle actif (application_role_id), comportement
+        // identique à avant l'ajout de cette fonctionnalité.
+        $user->authorizedRoles()->sync(
+            $dto->roleIds !== [] ? $dto->roleIds : [$dto->applicationRoleId]
+        );
+
+        return $user;
     }
 
     /**
@@ -222,6 +232,14 @@ class UserRepository implements UserRepositoryInterface
     public function updateFromData(int $id, UpdateUserData $dto): User
     {
         $user = $this->findById($id);
+
+        // AJOUT (post Étape 12, demande client) : $dto->roleIds n'est
+        // synchronisé que s'il a été explicitement fourni (null = non
+        // fourni, cf. UpdateUserData) - un update qui ne touche pas aux
+        // rôles ne doit pas effacer les autorisations existantes.
+        if ($dto->roleIds !== null) {
+            $user->authorizedRoles()->sync($dto->roleIds);
+        }
 
         if ($dto->isEmpty()) {
             return $user;

@@ -93,6 +93,7 @@ class UserService
                 isActive: $dto->isActive,
                 employeeNumber: $dto->employeeNumber,
                 jobTitle: $dto->jobTitle,
+                roleIds: $dto->roleIds,
             )
         );
 
@@ -179,6 +180,34 @@ class UserService
 
         $user = $this->users->findById($userId);
         $user->is_active = true;
+
+        return $this->users->save($user);
+    }
+
+    /**
+     * AJOUT (post Étape 12, demande client) : change le rôle ACTIF du
+     * User (application_role_id) pour un rôle parmi ceux dont il est
+     * autorisé (relation N-N authorizedRoles()) - utilisé par l'écran de
+     * sélection de rôle affiché après authentification lorsque le User
+     * est autorisé pour plus d'un rôle.
+     *
+     * Volontairement permissif côté acteur : un User ne fait ici que
+     * choisir parmi SES propres rôles autorisés, aucune permission
+     * Administrateur n'est requise (contrairement à updateByAdmin()).
+     *
+     * @throws UnauthorizedActionException si $roleId n'est pas parmi les
+     *         rôles autorisés du User.
+     */
+    public function switchActiveRole(User $user, int $roleId): User
+    {
+        if (! $user->authorizedRoles()->whereKey($roleId)->exists()) {
+            throw UnauthorizedActionException::requiresRole(
+                requiredRole: (string) $roleId,
+                actingUserId: $user->id,
+            );
+        }
+
+        $user->application_role_id = $roleId;
 
         return $this->users->save($user);
     }

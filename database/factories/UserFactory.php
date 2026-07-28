@@ -22,6 +22,22 @@ class UserFactory extends Factory
     protected static ?string $password;
 
     /**
+     * AJOUT (post Étape 12, demande client) : synchronise automatiquement
+     * la relation N-N authorizedRoles() avec le rôle actif
+     * (application_role_id) après création, afin que $user->authorizedRoles
+     * ne soit jamais vide pour un User généré par la factory - qu'il
+     * s'agisse des seeders existants ou des tests. Un test qui a besoin
+     * d'un User autorisé pour plusieurs rôles peut toujours appeler
+     * explicitement $user->authorizedRoles()->sync([...]) après création.
+     */
+    public function configure(): static
+    {
+        return $this->afterCreating(function (User $user): void {
+            $user->authorizedRoles()->syncWithoutDetaching([$user->application_role_id]);
+        });
+    }
+
+    /**
      * Define the model's default state.
      *
      * NOTE (Etape 0) : reecrite entierement - l'ancienne version

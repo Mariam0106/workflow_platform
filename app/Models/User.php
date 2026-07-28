@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -46,7 +47,13 @@ use Illuminate\Notifications\Notifiable;
  * BR-03  Every User belongs to exactly one Entity.
  * BR-04  Every User belongs to exactly one Department.
  * BR-05  Every User has exactly one Business Function.
- * BR-06  Every User has exactly one Application Role.
+ * BR-06  Every User has exactly one Application Role — this remains true
+ *        for the *active* role (application_role_id, used everywhere
+ *        else in the codebase: Policies, ValidatorResolverService,
+ *        PermissionService...). AJOUT (post Étape 12, demande client) :
+ *        a User may now be *authorized* for several Application Roles
+ *        (see authorizedRoles() below) and choose which one is active
+ *        for the session after logging in.
  * BR-07  Only active Users may access the platform.
  * BR-08  Company email is mandatory.
  *
@@ -184,6 +191,23 @@ class User extends Authenticatable
     }
 
     /**
+     * AJOUT (post Étape 12, demande client) : ensemble des Application
+     * Roles pour lesquels ce User est autorisé (relation N-N, table
+     * pivot `application_role_user`).
+     *
+     * Ne remplace pas applicationRole() : celle-ci reste le rôle ACTIF
+     * de la session courante et continue d'être utilisée partout
+     * ailleurs (Policies, ValidatorResolverService, hasRole()...).
+     * authorizedRoles() sert uniquement à déterminer parmi quels rôles
+     * le User peut choisir (écran de sélection post-authentification).
+     */
+    public function authorizedRoles(): BelongsToMany
+    {
+        return $this->belongsToMany(ApplicationRole::class, 'application_role_user')
+            ->withTimestamps();
+    }
+
+    /**
      * Direct hierarchical manager (N+1).
      *
      * Nullable: the top of the hierarchy has no manager.
@@ -312,6 +336,31 @@ class User extends Authenticatable
     public function hasRole(\App\Enums\ApplicationRoleCode $role): bool
     {
         return $this->applicationRole?->code === $role;
+    }
+
+    /**
+     * AJOUT (post Étape 12, demande client) : détermine si le User est
+     * autorisé pour le rôle donné (indépendamment de son rôle actif),
+     * via la relation N-N authorizedRoles().
+     *
+     * Exemple :
+     * $user->isAuthorizedForRole(\App\Enums\ApplicationRoleCode::Validator);
+     */
+    public function isAuthorizedForRole(\App\Enums\ApplicationRoleCode $role): bool
+    {
+        return $this->authorizedRoles->contains(
+            fn (ApplicationRole $authorizedRole) => $authorizedRole->code === $role
+        );
+    }
+
+    /**
+     * AJOUT (post Étape 12, demande client) : détermine si le User doit
+     * se voir proposer un choix de rôle après authentification (plus
+     * d'un rôle autorisé).
+     */
+    public function mustChooseActiveRole(): bool
+    {
+        return $this->authorizedRoles()->count() > 1;
     }
 
     /**

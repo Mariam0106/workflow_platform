@@ -61,6 +61,27 @@ class UpdateUserRequest extends FormRequest
             'application_role_id' => ['sometimes', 'integer', Rule::exists(ApplicationRole::class, 'id')->where('is_active', true)],
             'manager_id' => ['sometimes', 'nullable', 'integer', Rule::exists(User::class, 'id')->whereNot('id', $target->id)],
             'is_active' => ['sometimes', 'boolean'],
+
+            // AJOUT (post Étape 12, demande client) : rôles autorisés (N-N), optionnels.
+            'role_ids' => ['sometimes', 'array', 'min:1'],
+            'role_ids.*' => ['integer', Rule::exists(ApplicationRole::class, 'id')->where('is_active', true)],
         ];
+    }
+
+    /**
+     * AJOUT (post Étape 12, demande client) : si les deux champs sont
+     * soumis ensemble, le rôle actif doit faire partie des rôles
+     * autorisés soumis.
+     */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator): void {
+            $roleIds = $this->input('role_ids');
+
+            if (is_array($roleIds) && $roleIds !== [] && $this->filled('application_role_id')
+                && ! in_array((int) $this->input('application_role_id'), array_map('intval', $roleIds), true)) {
+                $validator->errors()->add('application_role_id', 'Le rôle actif doit faire partie des rôles autorisés sélectionnés.');
+            }
+        });
     }
 }

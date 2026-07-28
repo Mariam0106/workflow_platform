@@ -31,6 +31,17 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // AJOUT (post Étape 12, demande client) : un User autorisé pour
+        // plusieurs Application Roles (relation N-N) choisit son rôle
+        // actif avant de continuer, plutôt que de conserver
+        // silencieusement le dernier rôle actif enregistré. L'URL
+        // "intended" (si une route protégée avait été visée avant le
+        // login) reste en session et sera consommée par
+        // RoleSelectionController::store() une fois le rôle choisi.
+        if ($request->user()->mustChooseActiveRole()) {
+            return redirect()->route('role-selection.create');
+        }
+
         return redirect()->intended(route('dashboard'));
     }
 

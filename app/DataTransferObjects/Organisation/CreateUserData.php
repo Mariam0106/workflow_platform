@@ -23,13 +23,24 @@ namespace App\DataTransferObjects\Organisation;
  * BR-03  Every User belongs to exactly one Entity.
  * BR-04  Every User belongs to exactly one Department.
  * BR-05  Every User has exactly one Business Function.
- * BR-06  Every User has exactly one Application Role.
+ * BR-06  Every User has exactly one Application Role (rôle ACTIF -
+ *        application_role_id, inchangé). AJOUT (post Étape 12, demande
+ *        client) : $roleIds transporte l'ensemble des rôles pour
+ *        lesquels le User est autorisé (relation N-N) ; il inclut
+ *        toujours applicationRoleId. Absent du payload -> le User n'est
+ *        autorisé que pour son rôle actif, comportement identique à
+ *        avant l'ajout de cette fonctionnalité.
  * BR-08  Company email is mandatory (enforced by CompanyEmail VO, not
  *        re-validated here - this DTO trusts its caller already validated).
  * ==========================================================================
  */
 final readonly class CreateUserData
 {
+    /**
+     * @param array<int, int> $roleIds Rôles autorisés (N-N). Vide -> repli
+     *        sur [applicationRoleId] au moment de la persistance (voir
+     *        UserRepository::createFromData()).
+     */
     public function __construct(
         public int $entityId,
         public int $departmentId,
@@ -44,6 +55,7 @@ final readonly class CreateUserData
         public bool $isActive = true,
         public ?string $employeeNumber = null,
         public ?string $jobTitle = null,
+        public array $roleIds = [],
     ) {}
 
     /**
@@ -65,6 +77,7 @@ final readonly class CreateUserData
             isActive: (bool) ($data['is_active'] ?? true),
             employeeNumber: $data['employee_number'] ?? null,
             jobTitle: $data['job_title'] ?? null,
+            roleIds: isset($data['role_ids']) ? array_map('intval', $data['role_ids']) : [],
         );
     }
 
