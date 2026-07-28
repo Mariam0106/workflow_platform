@@ -26,7 +26,11 @@ use Illuminate\Validation\Rules\Password;
  * BR-03  Every User belongs to exactly one Entity.
  * BR-04  Every User belongs to exactly one Department.
  * BR-05  Every User has exactly one Business Function.
- * BR-06  Every User has exactly one Application Role.
+ * BR-06  Every User has exactly one Application Role (rôle actif).
+ *        AJOUT (post Étape 12, demande client) : `role_ids[]`, optionnel,
+ *        transporte les rôles pour lesquels le User est autorisé
+ *        (relation N-N) - absent -> repli sur [application_role_id]
+ *        uniquement (voir CreateUserData/UserRepository).
  * BR-08  Company email is mandatory (restricted to the configured
  *        domain(s), e.g. @saint-gobain.com - see config/workflow.php).
  *
@@ -75,9 +79,31 @@ class RegisterUserRequest extends FormRequest
             'business_function_id' => ['required', 'integer', Rule::exists(BusinessFunction::class, 'id')->where('is_active', true)],
             'application_role_id' => ['required', 'integer', Rule::exists(ApplicationRole::class, 'id')->where('is_active', true)],
 
+            // AJOUT (post Étape 12, demande client) : rôles autorisés (N-N), optionnels.
+            'role_ids' => ['sometimes', 'array', 'min:1'],
+            'role_ids.*' => ['integer', Rule::exists(ApplicationRole::class, 'id')->where('is_active', true)],
+
             // Nullable: only the top of the hierarchy has no manager (BR unspecified for root, deliberately allowed).
             'manager_id' => ['nullable', 'integer', Rule::exists(User::class, 'id')],
         ];
+    }
+
+    /**
+     * AJOUT (post Étape 12, demande client) : si role_ids est fourni, le
+     * rôle actif choisi (application_role_id) doit obligatoirement en
+     * faire partie - on ne peut pas être "actif" sur un rôle pour lequel
+     * on n'est pas autorisé.
+     */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator): void {
+            $roleIds = $this->input('role_ids');
+
+            if (is_array($roleIds) && $roleIds !== [] && $this->filled('application_role_id')
+                && ! in_array((int) $this->input('application_role_id'), array_map('intval', $roleIds), true)) {
+                $validator->errors()->add('application_role_id', 'Le rôle actif doit faire partie des rôles autorisés sélectionnés.');
+            }
+        });
     }
 
     /**

@@ -61,7 +61,27 @@ class StoreUserRequest extends FormRequest
             'application_role_id' => ['required', 'integer', Rule::exists(ApplicationRole::class, 'id')->where('is_active', true)],
             'manager_id' => ['nullable', 'integer', Rule::exists(User::class, 'id')],
 
+            // AJOUT (post Étape 12, demande client) : rôles autorisés (N-N), optionnels.
+            'role_ids' => ['sometimes', 'array', 'min:1'],
+            'role_ids.*' => ['integer', Rule::exists(ApplicationRole::class, 'id')->where('is_active', true)],
+
             'is_active' => ['boolean'],
         ];
+    }
+
+    /**
+     * AJOUT (post Étape 12, demande client) : cf. RegisterUserRequest -
+     * le rôle actif choisi doit faire partie des rôles autorisés soumis.
+     */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator): void {
+            $roleIds = $this->input('role_ids');
+
+            if (is_array($roleIds) && $roleIds !== [] && $this->filled('application_role_id')
+                && ! in_array((int) $this->input('application_role_id'), array_map('intval', $roleIds), true)) {
+                $validator->errors()->add('application_role_id', 'Le rôle actif doit faire partie des rôles autorisés sélectionnés.');
+            }
+        });
     }
 }

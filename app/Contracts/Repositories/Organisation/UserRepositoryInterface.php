@@ -142,6 +142,10 @@ interface UserRepositoryInterface
      *
      * NOTE: the User model's `password` cast ('hashed') auto-hashes on
      * write, so the DTO may carry a clear-text password safely.
+     *
+     * AJOUT (post Étape 12, demande client) : synchronise également
+     * $dto->roleIds sur la relation N-N User::authorizedRoles() (repli
+     * sur [applicationRoleId] si vide).
      */
     public function createFromData(CreateUserData $dto): User;
 
@@ -150,6 +154,10 @@ interface UserRepositoryInterface
      *
      * Only the fields actually present in the DTO are applied
      * (see UpdateUserData::toArray() logic).
+     *
+     * AJOUT (post Étape 12, demande client) : si $dto->roleIds est
+     * fourni (non null), synchronise également la relation N-N
+     * User::authorizedRoles().
      *
      * @throws UserNotFoundException
      */

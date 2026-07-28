@@ -7,6 +7,7 @@ use App\Http\Controllers\Organisation\Admin\EntityController;
 use App\Http\Controllers\Organisation\Admin\UserController;
 use App\Http\Controllers\Organisation\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Organisation\Auth\RegisteredUserController;
+use App\Http\Controllers\Organisation\Auth\RoleSelectionController;
 use App\Http\Controllers\Organisation\DashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +37,11 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+    // AJOUT (post Étape 12, demande client) : écran de choix du rôle actif
+    // pour les Users autorisés pour plusieurs Application Roles (N-N).
+    Route::get('select-role', [RoleSelectionController::class, 'create'])->name('role-selection.create');
+    Route::post('select-role', [RoleSelectionController::class, 'store'])->name('role-selection.store');
 
     // Placeholder - remplacé par le vrai tableau de bord à l'Étape 14.
     Route::get('dashboard', DashboardController::class)->name('dashboard');

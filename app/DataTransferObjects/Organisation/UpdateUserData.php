@@ -27,6 +27,14 @@ final readonly class UpdateUserData
      *        caller - used only to know WHICH keys were sent, values are
      *        read from the typed properties below.
      */
+    /**
+     * AJOUT (post Étape 12, demande client) : $roleIds transporte les
+     * rôles autorisés (N-N) lorsqu'ils sont fournis par l'appelant.
+     * `null` (valeur par défaut) signifie "non fourni" -> la relation
+     * N-N existante du User n'est pas modifiée (voir
+     * UserRepository::updateFromData()) ; un tableau vide, lui, la
+     * viderait explicitement.
+     */
     public function __construct(
         public ?int $entityId = null,
         public ?int $departmentId = null,
@@ -40,6 +48,7 @@ final readonly class UpdateUserData
         public ?bool $isActive = null,
         public ?string $employeeNumber = null,
         public ?string $jobTitle = null,
+        public ?array $roleIds = null,
         private array $provided = [],
     ) {}
 
@@ -63,6 +72,7 @@ final readonly class UpdateUserData
             isActive: array_key_exists('is_active', $data) ? (bool) $data['is_active'] : null,
             employeeNumber: array_key_exists('employee_number', $data) ? $data['employee_number'] : null,
             jobTitle: array_key_exists('job_title', $data) ? $data['job_title'] : null,
+            roleIds: array_key_exists('role_ids', $data) ? array_map('intval', $data['role_ids']) : null,
             provided: $data,
         );
     }
