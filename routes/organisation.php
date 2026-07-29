@@ -9,6 +9,7 @@ use App\Http\Controllers\Organisation\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Organisation\Auth\RegisteredUserController;
 use App\Http\Controllers\Organisation\Auth\RoleSelectionController;
 use App\Http\Controllers\Organisation\DashboardController;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,15 +29,22 @@ use Illuminate\Support\Facades\Route;
 // --- Jalon J1 : Auth minimale ---------------------------------------------
 
 Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
-    Route::post('register', [RegisteredUserController::class, 'store']);
-
     Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
 });
 
 Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+    // AJOUT (round 2 - demande client) : la création de compte est
+    // désormais réservée aux Administrateurs connectés (avant : route
+    // publique 'guest'). Réutilise UserPolicy::create(), déjà écrite en
+    // Étape 10 pour l'Admin-initiated creation à venir en Étape 13 - la
+    // même règle d'autorisation gouverne donc les deux points d'entrée.
+    Route::middleware('can:create,' . User::class)->group(function () {
+        Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
+        Route::post('register', [RegisteredUserController::class, 'store']);
+    });
 
     // AJOUT (post Étape 12, demande client) : écran de choix du rôle actif
     // pour les Users autorisés pour plusieurs Application Roles (N-N).

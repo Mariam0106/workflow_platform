@@ -53,11 +53,4 @@
             Connexion
         </button>
     </form>
-
-    <p class="mt-7 text-center text-sm text-slate-500">
-        Pas encore de compte ?
-        <a href="{{ route('register') }}" class="font-medium text-brand-blue hover:text-brand-blue-dark hover:underline underline-offset-2">
-            Créer un compte
-        </a>
-    </p>
 @endsection

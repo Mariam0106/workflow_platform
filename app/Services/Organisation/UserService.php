@@ -45,9 +45,14 @@ class UserService
     ) {}
 
     /**
-     * Self-registration (Jalon J1) - no permission check, anyone with a
-     * valid company email may sign up. Kept separate from createByAdmin()
-     * so the intent is unambiguous at the call site.
+     * Self-registration - kept as a distinct, reusable Service method
+     * (no permission check) in case self-service sign-up is reactivated
+     * later. NOTE (round 2 - demande client) : plus aucune route n'appelle
+     * cette méthode actuellement - RegisteredUserController utilise
+     * désormais createByAdmin() ci-dessous, la création de compte étant
+     * réservée aux Administrateurs. Conservée pour ne pas casser un appel
+     * direct (Tinker, tests, Artisan) et documenter clairement l'intent
+     * d'origine.
      */
     public function register(CreateUserData $dto): User
     {

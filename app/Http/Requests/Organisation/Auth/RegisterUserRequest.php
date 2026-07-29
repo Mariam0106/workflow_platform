@@ -19,18 +19,26 @@ use Illuminate\Validation\Rules\Password;
  * RegisterUserRequest
  * ==========================================================================
  *
- * Validates the registration form (Jalon J1 - auth minimale).
+ * Validates the account-creation form.
+ *
+ * AJOUT (round 2 - demande client) : cette route n'est plus publique -
+ * elle est désormais réservée aux Administrateurs (voir authorize() et
+ * routes/organisation.php, gate `can:create`). Un Admin choisit
+ * directement un ou plusieurs rôles autorisés (`role_ids[]`) pour le
+ * nouveau compte ; il n'y a plus de champ "rôle actif" unique séparé -
+ * le rôle actif initial est déterminé automatiquement (voir
+ * RegisteredUserController::store()), et le nouvel utilisateur pourra
+ * lui-même basculer entre ses rôles autorisés dès sa première connexion
+ * via l'écran de sélection de rôle (RoleSelectionController).
  *
  * Business Rules covered
  * --------------------------------------------------------------------------
  * BR-03  Every User belongs to exactly one Entity.
  * BR-04  Every User belongs to exactly one Department.
  * BR-05  Every User has exactly one Business Function.
- * BR-06  Every User has exactly one Application Role (rôle actif).
- *        AJOUT (post Étape 12, demande client) : `role_ids[]`, optionnel,
- *        transporte les rôles pour lesquels le User est autorisé
- *        (relation N-N) - absent -> repli sur [application_role_id]
- *        uniquement (voir CreateUserData/UserRepository).
+ * BR-06  Every User has exactly one Application Role (rôle actif) -
+ *        toujours vrai, mais désormais dérivé de role_ids plutôt que
+ *        soumis directement par le formulaire (round 2).
  * BR-08  Company email is mandatory (restricted to the configured
  *        domain(s), e.g. @saint-gobain.com - see config/workflow.php).
  *
@@ -46,10 +54,14 @@ class RegisterUserRequest extends FormRequest
 {
     use ValidatesCompanyEmailDomain;
 
+    /**
+     * AJOUT (round 2 - demande client) : réservé aux Administrateurs -
+     * même règle que StoreUserRequest (Admin/Étape 13), via
+     * UserPolicy::create() (Étape 10, inchangée).
+     */
     public function authorize(): bool
     {
-        // Registration is public - anyone with a company email may sign up.
-        return true;
+        return $this->user()->can('create', User::class);
     }
 
     /**
@@ -77,33 +89,17 @@ class RegisterUserRequest extends FormRequest
             'entity_id' => ['required', 'integer', Rule::exists(Entity::class, 'id')->where('is_active', true)],
             'department_id' => ['required', 'integer', Rule::exists(Department::class, 'id')->where('is_active', true)],
             'business_function_id' => ['required', 'integer', Rule::exists(BusinessFunction::class, 'id')->where('is_active', true)],
-            'application_role_id' => ['required', 'integer', Rule::exists(ApplicationRole::class, 'id')->where('is_active', true)],
 
-            // AJOUT (post Étape 12, demande client) : rôles autorisés (N-N), optionnels.
-            'role_ids' => ['sometimes', 'array', 'min:1'],
+            // MODIFIÉ (round 2 - demande client) : remplace l'ancien champ
+            // unique `application_role_id` (round 1 : optionnel en plus de
+            // lui) - un Admin choisit désormais un OU PLUSIEURS rôles
+            // autorisés directement, obligatoire (min:1).
+            'role_ids' => ['required', 'array', 'min:1'],
             'role_ids.*' => ['integer', Rule::exists(ApplicationRole::class, 'id')->where('is_active', true)],
 
             // Nullable: only the top of the hierarchy has no manager (BR unspecified for root, deliberately allowed).
             'manager_id' => ['nullable', 'integer', Rule::exists(User::class, 'id')],
         ];
-    }
-
-    /**
-     * AJOUT (post Étape 12, demande client) : si role_ids est fourni, le
-     * rôle actif choisi (application_role_id) doit obligatoirement en
-     * faire partie - on ne peut pas être "actif" sur un rôle pour lequel
-     * on n'est pas autorisé.
-     */
-    public function withValidator($validator): void
-    {
-        $validator->after(function ($validator): void {
-            $roleIds = $this->input('role_ids');
-
-            if (is_array($roleIds) && $roleIds !== [] && $this->filled('application_role_id')
-                && ! in_array((int) $this->input('application_role_id'), array_map('intval', $roleIds), true)) {
-                $validator->errors()->add('application_role_id', 'Le rôle actif doit faire partie des rôles autorisés sélectionnés.');
-            }
-        });
     }
 
     /**
@@ -114,6 +110,7 @@ class RegisterUserRequest extends FormRequest
         return [
             'email.unique' => 'Un compte existe déjà avec cette adresse e-mail.',
             'password.confirmed' => 'La confirmation du mot de passe ne correspond pas.',
+            'role_ids.required' => 'Sélectionnez au moins un rôle.',
         ];
     }
 }

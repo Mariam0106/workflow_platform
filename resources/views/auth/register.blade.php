@@ -11,6 +11,19 @@
         </p>
     </div>
 
+    {{-- AJOUT (round 2 - demande client) : cette page est désormais
+         réservée aux Administrateurs (voir routes/organisation.php, gate
+         'can:create') - message de confirmation après création d'un
+         compte, pour permettre d'en créer plusieurs à la suite. --}}
+    @if (session('status'))
+        <div class="mb-6 flex items-start gap-2.5 rounded-lg border border-emerald-200 bg-emerald-50 p-3.5">
+            <svg class="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+            </svg>
+            <p class="text-sm text-emerald-700">{{ session('status') }}</p>
+        </div>
+    @endif
+
     @if ($errors->any())
         <div class="mb-6 flex items-start gap-2.5 rounded-lg border border-red-200 bg-red-50 p-3.5">
             <svg class="mt-0.5 h-4 w-4 shrink-0 text-red-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -105,15 +118,32 @@
                         @endforeach
                     </select>
                 </div>
-                <div>
-                    <label for="application_role_id" class="mb-1.5 block text-[13px] font-medium text-slate-700">Profil</label>
-                    <select id="application_role_id" name="application_role_id" required
-                            class="block w-full rounded-lg border border-brand-border bg-white px-3.5 py-2.5 text-sm text-brand-navy shadow-sm transition focus:border-brand-blue focus:outline-none focus:ring-4 focus:ring-brand-blue/10">
-                        <option value="">Sélectionner —</option>
+
+                {{-- MODIFIÉ (round 2 - demande client) : remplace l'ancien
+                     <select> "Profil" (choix unique) par des cases à
+                     cocher - un compte peut désormais être autorisé pour
+                     plusieurs rôles (relation N-N). Le nouvel utilisateur
+                     choisira lui-même son rôle actif à sa première
+                     connexion s'il en a plus d'un (écran de sélection de
+                     rôle). --}}
+                <div class="col-span-2">
+                    <label class="mb-1.5 block text-[13px] font-medium text-slate-700">
+                        Rôle(s) <span class="font-normal text-slate-400">(un ou plusieurs)</span>
+                    </label>
+                    <div class="grid grid-cols-3 gap-2">
                         @foreach ($applicationRoles as $role)
-                            <option value="{{ $role->id }}" @selected(old('application_role_id') == $role->id)>{{ $role->name }}</option>
+                            @php $oldRoleIds = old('role_ids', []); @endphp
+                            <label class="flex cursor-pointer select-none items-center gap-2 rounded-lg border border-brand-border bg-white px-3.5 py-2.5 text-sm text-brand-navy shadow-sm transition hover:border-brand-blue/50 has-[:checked]:border-brand-blue has-[:checked]:bg-brand-blue/5">
+                                <input type="checkbox" name="role_ids[]" value="{{ $role->id }}"
+                                       @checked(in_array($role->id, $oldRoleIds))
+                                       class="h-4 w-4 rounded border-slate-300 text-brand-blue focus:ring-2 focus:ring-brand-blue/30 focus:ring-offset-0">
+                                <span>{{ $role->name }}</span>
+                            </label>
                         @endforeach
-                    </select>
+                    </div>
+                    <p class="mt-1.5 text-xs text-slate-400">
+                        Ex : cocher « User » et « Validator » permettra au collaborateur de basculer entre les deux après connexion.
+                    </p>
                 </div>
 
                 <div class="col-span-2">
