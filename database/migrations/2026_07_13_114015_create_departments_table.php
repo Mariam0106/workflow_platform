@@ -1,0 +1,49 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+{
+    Schema::create('departments', function (Blueprint $table) {
+
+        // Primary Key
+        $table->id();
+
+        // Parent Entity
+        $table->foreignId('entity_id')
+              ->constrained('entities')
+              ->restrictOnDelete()
+              ->cascadeOnUpdate();
+
+        // Business Information
+        $table->string('code', 20);
+        $table->string('name', 150);
+        $table->text('description')->nullable();
+
+        // Status
+        $table->boolean('is_active')->default(true);
+
+        // Audit
+        $table->timestamps();
+        $table->softDeletes();
+
+        // Constraints
+        $table->unique(['entity_id', 'code']);
+    });
+}
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('departments');
+    }
+};
