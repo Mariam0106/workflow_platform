@@ -51,6 +51,7 @@ final readonly class CreateUserData
         public ?string $phone,
         public string $password,
         public bool $isActive = true,
+        public \App\Enums\RegistrationStatus $registrationStatus = \App\Enums\RegistrationStatus::Approved,
         public ?string $employeeNumber = null,
         public ?string $jobTitle = null,
     ) {}
@@ -118,6 +119,7 @@ final readonly class CreateUserData
             'phone' => $this->phone,
             'password' => $this->password,
             'is_active' => $this->isActive,
+            'registration_status' => $this->registrationStatus->value,
             'employee_number' => $this->employeeNumber,
             'job_title' => $this->jobTitle,
         ];

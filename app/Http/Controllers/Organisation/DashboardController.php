@@ -66,7 +66,25 @@ class DashboardController extends Controller
                 ->latest()
                 ->limit(5)
                 ->get(),
+            'topForms' => $activeRole === ApplicationRoleCode::Administrator ? $this->topForms() : null,
         ]);
+    }
+
+    /**
+     * Les 5 Formulaires ayant reçu le plus de Demandes au total - donne
+     * à l'Administrateur une vue de ce qui est réellement utilisé.
+     *
+     * @return \Illuminate\Support\Collection<int, object{name: string, total: int}>
+     */
+    private function topForms(): \Illuminate\Support\Collection
+    {
+        return RequestModel::query()
+            ->join('forms', 'forms.id', '=', 'requests.form_id')
+            ->selectRaw('forms.name as name, COUNT(*) as total')
+            ->groupBy('forms.id', 'forms.name')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
     }
 
     /**
@@ -78,6 +96,7 @@ class DashboardController extends Controller
     {
         return [
             ['label' => 'Utilisateurs actifs', 'value' => User::query()->active()->count(), 'icon' => 'users', 'accent' => 'blue', 'href' => route('organisation.users.index')],
+            ['label' => 'Inscriptions en attente', 'value' => User::query()->where('registration_status', \App\Enums\RegistrationStatus::Pending)->count(), 'icon' => 'clock', 'accent' => 'warning', 'href' => route('organisation.registrations.index')],
             ['label' => 'Demandes en cours', 'value' => RequestModel::query()->where('status', RequestStatus::Submitted)->count(), 'icon' => 'inbox', 'accent' => 'warning', 'href' => route('workflow.admin.requests.index', ['status' => RequestStatus::Submitted->value])],
             ['label' => 'Demandes validées', 'value' => RequestModel::query()->where('status', RequestStatus::Completed)->count(), 'icon' => 'check', 'accent' => 'success', 'href' => route('workflow.admin.requests.index', ['status' => RequestStatus::Completed->value])],
             ['label' => 'Demandes refusées', 'value' => RequestModel::query()->where('status', RequestStatus::Rejected)->count(), 'icon' => 'close', 'accent' => 'danger', 'href' => route('workflow.admin.requests.index', ['status' => RequestStatus::Rejected->value])],

@@ -6,6 +6,7 @@ use App\Http\Controllers\Organisation\ActiveRoleController;
 use App\Http\Controllers\Organisation\Admin\BusinessFunctionController;
 use App\Http\Controllers\Organisation\Admin\DepartmentController;
 use App\Http\Controllers\Organisation\Admin\EntityController;
+use App\Http\Controllers\Organisation\Admin\RegistrationController;
 use App\Http\Controllers\Organisation\Admin\UserController;
 use App\Http\Controllers\Organisation\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Organisation\Auth\RegisteredUserController;
@@ -32,6 +33,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('register', [RegisteredUserController::class, 'store']);
+    Route::get('register/pending', fn () => view('auth.registration-pending'))->name('registration.pending');
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
@@ -58,6 +60,13 @@ Route::middleware('auth')->group(function () {
         Route::resource('users', UserController::class)->except(['destroy']);
         Route::post('users/{user}/deactivate', [UserController::class, 'deactivate'])->name('users.deactivate');
         Route::post('users/{user}/activate', [UserController::class, 'activate'])->name('users.activate');
+
+        Route::prefix('registrations')->name('registrations.')->group(function () {
+            Route::get('/', [RegistrationController::class, 'index'])->name('index');
+            Route::get('{user}/edit', [RegistrationController::class, 'edit'])->name('edit');
+            Route::post('{user}/approve', [RegistrationController::class, 'approve'])->name('approve');
+            Route::post('{user}/reject', [RegistrationController::class, 'reject'])->name('reject');
+        });
 
         Route::resource('departments', DepartmentController::class)->except(['show', 'destroy']);
         Route::post('departments/{department}/archive', [DepartmentController::class, 'archive'])->name('departments.archive');

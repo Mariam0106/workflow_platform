@@ -1,9 +1,18 @@
 @extends('layouts.admin', ['title' => 'Tableau de bord'])
 
 @section('content')
-    <div class="mb-6">
-        <h1 class="text-lg font-semibold text-brand-navy">Dashboard</h1>
-        <p class="mt-0.5 text-[13px] text-slate-400">{{ $user->activeApplicationRole()?->name }} · {{ $user->department?->name }} · {{ $user->entity?->name }}</p>
+    <div class="mb-6 flex items-center justify-between">
+        <div>
+            <h1 class="text-lg font-semibold text-brand-navy">Dashboard</h1>
+            <p class="mt-0.5 text-[13px] text-slate-400">{{ $user->activeApplicationRole()?->name }} · {{ $user->department?->name }} · {{ $user->entity?->name }}</p>
+        </div>
+        <p class="hidden text-xs text-slate-400 sm:block">
+            @php
+                $joursFr = ['Monday' => 'Lundi', 'Tuesday' => 'Mardi', 'Wednesday' => 'Mercredi', 'Thursday' => 'Jeudi', 'Friday' => 'Vendredi', 'Saturday' => 'Samedi', 'Sunday' => 'Dimanche'];
+                $moisFr = ['January' => 'janvier', 'February' => 'février', 'March' => 'mars', 'April' => 'avril', 'May' => 'mai', 'June' => 'juin', 'July' => 'juillet', 'August' => 'août', 'September' => 'septembre', 'October' => 'octobre', 'November' => 'novembre', 'December' => 'décembre'];
+            @endphp
+            {{ $joursFr[now()->format('l')] }} {{ now()->format('d') }} {{ $moisFr[now()->format('F')] }} {{ now()->format('Y') }}
+        </p>
     </div>
 
     {{-- ==================================================
@@ -32,6 +41,28 @@
             />
         @endforeach
     </div>
+
+    @if ($topForms && $topForms->isNotEmpty())
+        <div class="mt-6">
+            <x-card>
+                <h2 class="mb-4 text-[13px] font-semibold uppercase tracking-wide text-slate-500">Formulaires les plus utilisés</h2>
+                @php $maxTotal = max(1, $topForms->max('total')); @endphp
+                <ul class="grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2">
+                    @foreach ($topForms as $topForm)
+                        <li>
+                            <div class="mb-1 flex items-center justify-between text-[13px]">
+                                <span class="truncate font-medium text-brand-navy">{{ $topForm->name }}</span>
+                                <span class="shrink-0 text-slate-400">{{ $topForm->total }}</span>
+                            </div>
+                            <div class="h-1.5 w-full rounded-full bg-slate-100">
+                                <div class="h-1.5 rounded-full bg-brand-blue" style="width: {{ max(4, round($topForm->total / $maxTotal * 100)) }}%"></div>
+                            </div>
+                        </li>
+                    @endforeach
+                </ul>
+            </x-card>
+        </div>
+    @endif
 
     {{-- ==================================================
          ACTIONS + ACTIVITÉ RÉCENTE

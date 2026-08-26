@@ -14,6 +14,7 @@
             'email' => 'E-mail',
             'password' => 'Mot de passe',
             'number' => 'Nombre',
+            'montant' => 'Montant (avec virgule)',
             'date' => 'Date',
             'select' => 'Liste déroulante',
             'file' => 'Pièce jointe',

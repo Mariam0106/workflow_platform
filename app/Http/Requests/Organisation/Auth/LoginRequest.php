@@ -55,6 +55,33 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
+        // BR-07 : inactive accounts never authenticate, even with the
+        // right password. Avant de tenter l'authentification, un
+        // message précis est donné si le compte existe mais est encore
+        // en attente/refusé (auto-inscription) - plus clair pour la
+        // personne qu'un simple "identifiants incorrects", et n'aide
+        // en rien un attaquant (il faut déjà connaître un email
+        // réellement inscrit pour voir ce message).
+        $pendingOrRejected = \App\Models\User::query()
+            ->where('email', $this->string('email'))
+            ->whereIn('registration_status', [
+                \App\Enums\RegistrationStatus::Pending->value,
+                \App\Enums\RegistrationStatus::Rejected->value,
+            ])
+            ->first();
+
+        if ($pendingOrRejected?->isPendingRegistration()) {
+            throw ValidationException::withMessages([
+                'email' => "Ta demande d'inscription est encore en attente d'approbation par un Administrateur.",
+            ]);
+        }
+
+        if ($pendingOrRejected?->isRejectedRegistration()) {
+            throw ValidationException::withMessages([
+                'email' => "Ta demande d'inscription a été refusée. Contacte un Administrateur pour plus de détails.",
+            ]);
+        }
+
         // BR-07 : inactive accounts never authenticate, even with the right password.
         if (! Auth::attempt(['email' => $this->string('email'), 'password' => $this->string('password'), 'is_active' => true], $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());

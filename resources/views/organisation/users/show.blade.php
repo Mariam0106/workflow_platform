@@ -23,6 +23,17 @@
                     <dd class="mt-0.5"><x-status-badge :active="$user->is_active" /></dd>
                 </div>
                 <div>
+                    <dt class="text-xs text-slate-400">Dernière connexion</dt>
+                    <dd class="mt-0.5 text-brand-navy">
+                        @if ($user->last_login_at)
+                            {{ $user->last_login_at->diffForHumans() }}
+                            <span class="text-xs text-slate-400">({{ $user->last_login_at->format('d/m/Y à H:i') }})</span>
+                        @else
+                            <span class="text-slate-400">Jamais connecté</span>
+                        @endif
+                    </dd>
+                </div>
+                <div>
                     <dt class="text-xs text-slate-400">E-mail</dt>
                     <dd class="mt-0.5 text-brand-navy">{{ $user->email }}</dd>
                 </div>

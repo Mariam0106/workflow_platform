@@ -105,6 +105,11 @@ class User extends Authenticatable
         // Status
 
         'is_active',
+        'last_login_at',
+        'registration_status',
+        'approved_at',
+        'approved_by',
+        'rejected_reason',
     ];
 
     /*-------------------------------------------------------------------------
@@ -131,6 +136,12 @@ class User extends Authenticatable
             'password' => 'hashed',
 
             'is_active' => 'boolean',
+
+            'last_login_at' => 'datetime',
+
+            'registration_status' => \App\Enums\RegistrationStatus::class,
+
+            'approved_at' => 'datetime',
 
             'created_at' => 'datetime',
 
@@ -365,6 +376,26 @@ class User extends Authenticatable
     public function hasRole(\App\Enums\ApplicationRoleCode $role): bool
     {
         return $this->activeRoleCode() === $role;
+    }
+
+    public function isPendingRegistration(): bool
+    {
+        return $this->registration_status === \App\Enums\RegistrationStatus::Pending;
+    }
+
+    public function isApprovedRegistration(): bool
+    {
+        return $this->registration_status === \App\Enums\RegistrationStatus::Approved;
+    }
+
+    public function isRejectedRegistration(): bool
+    {
+        return $this->registration_status === \App\Enums\RegistrationStatus::Rejected;
+    }
+
+    public function approver(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 
     /**

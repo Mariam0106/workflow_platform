@@ -95,4 +95,13 @@ class UserPolicy
     {
         return false;
     }
+
+    /**
+     * Traiter (approuver/refuser) une auto-inscription en attente -
+     * Administrator only (via before()).
+     */
+    public function manageRegistrations(User $actor): bool
+    {
+        return false;
+    }
 }

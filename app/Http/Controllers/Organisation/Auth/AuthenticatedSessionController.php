@@ -27,9 +27,14 @@ class AuthenticatedSessionController extends Controller
     }
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate(); 
+        $request->authenticate();
 
         $request->session()->regenerate();
+
+        $user = Auth::user();
+        $user->update(['last_login_at' => now()]);
+
+        app(\App\Services\AuditLogger::class)->log($user->id, 'user_logged_in', 'User', $user->id);
 
         return redirect()->intended(route('dashboard'));
     }

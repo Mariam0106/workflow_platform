@@ -26,6 +26,17 @@
                         <th class="px-5 py-3">Rattachement</th>
                         <th class="px-5 py-3">Rôles</th>
                         <th class="px-5 py-3">Statut</th>
+                        <th class="px-5 py-3">
+                            <a href="{{ route('organisation.users.index', array_merge(request()->except(['sort', 'direction']), [
+                                'sort' => 'last_login_at',
+                                'direction' => $sort === 'last_login_at' && $direction === 'desc' ? 'asc' : 'desc',
+                            ])) }}" class="inline-flex items-center gap-1 hover:text-brand-navy">
+                                Dernière connexion
+                                @if ($sort === 'last_login_at')
+                                    @include('layouts.partials.icon', ['name' => 'chevron-down', 'class' => 'h-3 w-3 transition-transform ' . ($direction === 'asc' ? 'rotate-180' : '')])
+                                @endif
+                            </a>
+                        </th>
                         <th class="px-5 py-3"></th>
                     </tr>
                 </thead>
@@ -57,6 +68,13 @@
                             </td>
                             <td class="px-5 py-3.5">
                                 <x-status-badge :active="$user->is_active" />
+                            </td>
+                            <td class="px-5 py-3.5 text-slate-500">
+                                @if ($user->last_login_at)
+                                    {{ $user->last_login_at->diffForHumans() }}
+                                @else
+                                    <span class="text-slate-400">Jamais connecté</span>
+                                @endif
                             </td>
                             <td class="px-5 py-3.5 text-right">
                                 <div class="flex items-center justify-end gap-1">

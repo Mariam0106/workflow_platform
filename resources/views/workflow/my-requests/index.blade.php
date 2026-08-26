@@ -17,15 +17,32 @@
     {{-- Le filtre par statut (KPI du dashboard) reste actif pendant la
          recherche - un champ caché le reporte plutôt que d'utiliser
          x-search-input seul, qui ne connaît que "q". --}}
-    <form method="GET" class="relative mb-4 w-full max-w-xs">
+    <form method="GET" class="mb-4 flex flex-wrap items-center gap-2.5">
         @if ($activeStatus)
             <input type="hidden" name="status" value="{{ $activeStatus }}">
         @endif
-        <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-            @include('layouts.partials.icon', ['name' => 'search', 'class' => 'h-4 w-4'])
-        </span>
-        <input type="text" name="q" value="{{ $search }}" placeholder="Rechercher par référence, formulaire…" autocomplete="off"
-               class="h-9 w-full rounded-lg border border-brand-border bg-white pl-9 pr-3 text-[13px] text-brand-navy shadow-sm transition placeholder:text-slate-400 hover:border-brand-blue/40 focus:border-brand-blue focus:outline-none focus:ring-4 focus:ring-brand-blue/10">
+
+        <div class="relative w-full max-w-xs">
+            <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                @include('layouts.partials.icon', ['name' => 'search', 'class' => 'h-4 w-4'])
+            </span>
+            <input type="text" name="q" value="{{ $search }}" placeholder="Rechercher par référence, formulaire…" autocomplete="off"
+                   class="h-9 w-full rounded-lg border border-brand-border bg-white pl-9 pr-3 text-[13px] text-brand-navy shadow-sm transition placeholder:text-slate-400 hover:border-brand-blue/40 focus:border-brand-blue focus:outline-none focus:ring-4 focus:ring-brand-blue/10">
+        </div>
+
+        <select name="category" onchange="this.form.requestSubmit()"
+                class="h-9 rounded-lg border border-brand-border bg-white px-3 text-[13px] text-brand-navy shadow-sm transition hover:border-brand-blue/40 focus:border-brand-blue focus:outline-none focus:ring-4 focus:ring-brand-blue/10">
+            <option value="">Toutes les catégories</option>
+            @foreach ($categories as $formCategory)
+                <option value="{{ $formCategory->id }}" @selected((string) $activeCategoryId === (string) $formCategory->id)>{{ $formCategory->name }}</option>
+            @endforeach
+        </select>
+
+        @if ($activeCategoryId)
+            <a href="{{ route('workflow.my-requests.index', array_filter(['status' => $activeStatus, 'q' => $search])) }}" class="text-[13px] font-medium text-brand-blue hover:text-brand-blue-dark">
+                Retirer le filtre catégorie
+            </a>
+        @endif
     </form>
 
     <x-card :padded="false">

@@ -46,7 +46,13 @@
                     @php $previousSection = $value->formField?->section_title ?? $previousSection; @endphp
                     <div>
                         <dt class="text-xs text-slate-400">{{ $value->formField?->label }}</dt>
-                        <dd class="mt-0.5 text-brand-navy">{{ $value->value }}</dd>
+                        <dd class="mt-0.5 text-brand-navy">
+                            @if ($value->formField?->isMontant() && is_numeric($value->value))
+                                {{ number_format((float) $value->value, 2, ',', ' ') }} MAD
+                            @else
+                                {{ $value->value }}
+                            @endif
+                        </dd>
                     </div>
                 @endforeach
             </dl>

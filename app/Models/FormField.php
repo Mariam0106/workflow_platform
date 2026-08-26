@@ -226,6 +226,15 @@ class FormField extends Model
     }
 
     /**
+     * Determine whether the field is a monetary amount (formatage
+     * milliers + 2 décimales, ex. "150 000,00").
+     */
+    public function isMontant(): bool
+    {
+        return $this->field_type === 'montant';
+    }
+
+    /**
      * Determine whether the field is a date.
      */
     public function isDate(): bool

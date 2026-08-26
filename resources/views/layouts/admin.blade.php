@@ -108,6 +108,7 @@
                         <p class="sidebar-section-title mb-1.5 px-2.5 text-[11px] font-semibold uppercase tracking-wide text-slate-400">Administration</p>
                         <ul class="space-y-0.5">
                             @include('layouts.partials.nav-item', ['label' => 'Utilisateurs', 'route' => 'organisation.users.index', 'routePattern' => 'organisation.users.*', 'icon' => 'users'])
+                            @include('layouts.partials.nav-item', ['label' => 'Inscriptions en attente', 'route' => 'organisation.registrations.index', 'routePattern' => 'organisation.registrations.*', 'icon' => 'clock', 'badge' => \App\Models\User::query()->where('registration_status', \App\Enums\RegistrationStatus::Pending)->count()])
                             @include('layouts.partials.nav-item', ['label' => 'Départements', 'route' => 'organisation.departments.index', 'routePattern' => 'organisation.departments.*', 'icon' => 'building'])
                             @include('layouts.partials.nav-item', ['label' => 'Entités', 'route' => 'organisation.entities.index', 'routePattern' => 'organisation.entities.*', 'icon' => 'layers'])
                             @include('layouts.partials.nav-item', ['label' => 'Fonctions métier', 'route' => 'organisation.business-functions.index', 'routePattern' => 'organisation.business-functions.*', 'icon' => 'briefcase'])

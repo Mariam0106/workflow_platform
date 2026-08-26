@@ -109,6 +109,15 @@ class SubmitRequestRequest extends FormRequest
                     'string',
                     'max:5000',
                 ];
+
+                if ($field->field_type === 'number') {
+                    $rules["values.{$field->id}"][] = 'numeric';
+                } elseif ($field->isMontant()) {
+                    // BR (Montant) : toujours un nombre positif ou nul -
+                    // un montant négatif n'a pas de sens métier ici.
+                    $rules["values.{$field->id}"][] = 'numeric';
+                    $rules["values.{$field->id}"][] = 'min:0';
+                }
             }
         }
 

@@ -9,6 +9,10 @@
             Réservé aux collaborateurs disposant d'une adresse professionnelle
             <span class="font-medium text-brand-navy">@saint-gobain.com</span>.
         </p>
+        <p class="mt-2 flex items-start gap-2 rounded-lg border border-brand-blue/20 bg-brand-blue/[0.04] px-3.5 py-2.5 text-[13px] text-brand-navy">
+            @include('layouts.partials.icon', ['name' => 'clock', 'class' => 'mt-0.5 h-4 w-4 shrink-0 text-brand-blue'])
+            Ta demande sera examinée par un Administrateur avant que ton compte ne soit activé - tu recevras un e-mail une fois la décision prise.
+        </p>
     </div>
 
     @if ($errors->any())
@@ -105,35 +109,6 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-span-2">
-                    <label class="mb-1.5 block text-[13px] font-medium text-slate-700">
-                        Profil(s) applicatif(s) <span class="font-normal text-slate-400">(un ou plusieurs)</span>
-                    </label>
-                    <div class="flex flex-wrap gap-x-6 gap-y-2 rounded-lg border border-brand-border bg-white px-3.5 py-3">
-                        @foreach ($applicationRoles as $role)
-                            <label class="flex items-center gap-2 text-sm text-brand-navy">
-                                <input type="checkbox" name="application_role_ids[]" value="{{ $role->id }}"
-                                       @checked(collect(old('application_role_ids', []))->contains($role->id))
-                                       class="rounded border-brand-border text-brand-blue focus:ring-brand-blue/30">
-                                {{ $role->name }}
-                            </label>
-                        @endforeach
-                    </div>
-                    @error('application_role_ids') <p class="mt-1 text-xs text-brand-danger">{{ $message }}</p> @enderror
-                </div>
-                <div class="col-span-2">
-                    <label for="default_application_role_id" class="mb-1.5 block text-[13px] font-medium text-slate-700">
-                        Profil par défaut <span class="font-normal text-slate-400">(doit faire partie des profils cochés ci-dessus)</span>
-                    </label>
-                    <select id="default_application_role_id" name="default_application_role_id" required
-                            class="block w-full rounded-lg border border-brand-border bg-white px-3.5 py-2.5 text-sm text-brand-navy shadow-sm transition focus:border-brand-blue focus:outline-none focus:ring-4 focus:ring-brand-blue/10">
-                        <option value="">Sélectionner —</option>
-                        @foreach ($applicationRoles as $role)
-                            <option value="{{ $role->id }}" @selected(old('default_application_role_id') == $role->id)>{{ $role->name }}</option>
-                        @endforeach
-                    </select>
-                    @error('default_application_role_id') <p class="mt-1 text-xs text-brand-danger">{{ $message }}</p> @enderror
-                </div>
 
                 <div class="col-span-2">
                     <label for="manager_id" class="mb-1.5 block text-[13px] font-medium text-slate-700">
@@ -176,7 +151,7 @@
 
         <button type="submit"
                 class="flex w-full items-center justify-center gap-2 rounded-lg bg-brand-blue px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-blue-dark focus:outline-none focus:ring-4 focus:ring-brand-blue/25">
-            Créer mon compte
+            Envoyer ma demande d'inscription
         </button>
     </form>
 

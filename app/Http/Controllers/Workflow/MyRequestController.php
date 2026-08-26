@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Workflow\SaveRequestDraftRequest;
 use App\Http\Requests\Workflow\SubmitRequestRequest;
 use App\Models\Form;
+use App\Models\FormCategory;
 use App\Models\Request as RequestModel;
 use App\Support\AttachmentUploader;
 use Illuminate\Http\JsonResponse;
@@ -42,6 +43,7 @@ class MyRequestController extends Controller
     {
         $status = $request->query('status');
         $search = $request->query('q');
+        $categoryId = $request->query('category');
 
         $requests = RequestModel::query()
             ->where('requester_id', $request->user()->id)
@@ -49,30 +51,63 @@ class MyRequestController extends Controller
                 $status && in_array($status, array_column(RequestStatus::cases(), 'value'), true),
                 fn ($q) => $q->where('status', $status),
             )
+            ->when($categoryId, fn ($q) => $q->whereHas('form', fn ($f) => $f->where('form_category_id', $categoryId)))
             ->when($search, fn ($q) => $q->where(fn ($inner) => $inner
                 ->where('reference_number', 'like', "%{$search}%")
                 ->orWhereHas('form', fn ($f) => $f->where('name', 'like', "%{$search}%"))))
-            ->with(['form', 'currentStep'])
+            ->with(['form.formCategory', 'currentStep'])
             ->latest()
             ->paginate(20)
             ->withQueryString();
 
-        return view('workflow.my-requests.index', ['requests' => $requests, 'activeStatus' => $status, 'search' => $search]);
+        return view('workflow.my-requests.index', [
+            'requests' => $requests,
+            'activeStatus' => $status,
+            'search' => $search,
+            'activeCategoryId' => $categoryId,
+            'categories' => FormCategory::query()->active()->orderBy('name')->get(),
+        ]);
     }
 
     /**
      * BR-15 : seuls les Formulaires publiés peuvent être utilisés pour
      * créer une nouvelle Demande.
      */
-    public function selectForm(): View
+    public function selectForm(Request $request): View
     {
+        $categoryId = $request->query('category');
+
+        if ($categoryId === null) {
+            $categories = FormCategory::query()
+                ->whereHas('forms', fn ($q) => $q->published())
+                ->withCount(['forms' => fn ($q) => $q->published()])
+                ->orderBy('name')
+                ->get();
+
+            return view('workflow.my-requests.select-form', [
+                'categories' => $categories,
+                'category' => null,
+                'forms' => null,
+                'search' => null,
+            ]);
+        }
+
+        $category = FormCategory::query()->findOrFail($categoryId);
+        $search = $request->query('q');
+
         $forms = Form::query()
             ->published()
-            ->with('formCategory')
+            ->where('form_category_id', $category->id)
+            ->when($search, fn ($q) => $q->where('name', 'like', "%{$search}%"))
             ->orderBy('name')
             ->get();
 
-        return view('workflow.my-requests.select-form', ['forms' => $forms]);
+        return view('workflow.my-requests.select-form', [
+            'categories' => null,
+            'category' => $category,
+            'forms' => $forms,
+            'search' => $search,
+        ]);
     }
 
     public function create(Request $request, Form $form): View

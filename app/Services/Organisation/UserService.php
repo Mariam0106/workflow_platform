@@ -9,14 +9,24 @@ use App\Contracts\Repositories\Organisation\EntityRepositoryInterface;
 use App\Contracts\Repositories\Organisation\UserRepositoryInterface;
 use App\DataTransferObjects\Organisation\CreateUserData;
 use App\DataTransferObjects\Organisation\UpdateUserData;
+use App\Enums\ApplicationRoleCode;
+use App\Enums\NotificationChannel;
+use App\Enums\NotificationStatus;
+use App\Enums\RegistrationStatus;
 use App\Events\Organisation\UserCreated;
 use App\Exceptions\Organisation\DepartmentNotFoundException;
 use App\Exceptions\Organisation\EntityNotFoundException;
 use App\Exceptions\Organisation\InvalidManagerAssignmentException;
+use App\Exceptions\Organisation\RegistrationNotPendingException;
 use App\Exceptions\Organisation\UnauthorizedActionException;
+use App\Mail\RegistrationApprovedMail;
+use App\Mail\RegistrationRejectedMail;
+use App\Models\ApplicationRole;
+use App\Models\Notification;
 use App\Models\User;
 use App\Services\AuditLogger;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 /**
  * ==========================================================================
@@ -70,7 +80,47 @@ class UserService
      */
     public function register(CreateUserData $dto): User
     {
-        return $this->createUser($dto, actor: null);
+        // BR-06/09 (sécurité) : une auto-inscription publique ne doit
+        // JAMAIS pouvoir s'attribuer elle-même un Rôle Applicatif -
+        // forcé ici sur "User" (le plus bas privilège), quel que soit ce
+        // que le formulaire aurait transmis. Un Administrateur choisit
+        // le/les vrai(s) Rôle(s) au moment de l'approbation
+        // (approveRegistration()). Le compte reste par ailleurs
+        // inutilisable (is_active=false, registration_status Pending)
+        // tant que cette approbation n'a pas eu lieu.
+        $userRoleId = ApplicationRole::query()->where('code', ApplicationRoleCode::User->value)->value('id');
+
+        $pendingDto = new CreateUserData(
+            entityId: $dto->entityId,
+            departmentId: $dto->departmentId,
+            businessFunctionId: $dto->businessFunctionId,
+            applicationRoleIds: [$userRoleId],
+            defaultApplicationRoleId: $userRoleId,
+            managerId: $dto->managerId,
+            firstName: $dto->firstName,
+            lastName: $dto->lastName,
+            email: $dto->email,
+            phone: $dto->phone,
+            password: $dto->password,
+            isActive: false,
+            registrationStatus: RegistrationStatus::Pending,
+            employeeNumber: $dto->employeeNumber,
+            jobTitle: $dto->jobTitle,
+        );
+
+        $user = $this->createUser($pendingDto, actor: null);
+
+        foreach (User::query()->whereHas('applicationRoles', fn ($q) => $q->where('code', ApplicationRoleCode::Administrator->value))->where('is_active', true)->get() as $admin) {
+            Notification::create([
+                'recipient_id' => $admin->id,
+                'title' => "Nouvelle demande d'inscription",
+                'message' => "{$user->full_name} ({$user->email}) demande à rejoindre la plateforme.",
+                'channel' => NotificationChannel::InApp,
+                'status' => NotificationStatus::Sent,
+            ]);
+        }
+
+        return $user;
     }
 
     /**
@@ -116,6 +166,7 @@ class UserService
                 phone: $dto->phone,
                 password: Hash::make($dto->password),
                 isActive: $dto->isActive,
+                registrationStatus: $dto->registrationStatus,
                 employeeNumber: $dto->employeeNumber,
                 jobTitle: $dto->jobTitle,
             )
@@ -299,5 +350,65 @@ class UserService
             $visited[] = $current->manager_id;
             $current = $this->users->findById($current->manager_id);
         }
+    }
+
+    /**
+     * Approuve une auto-inscription en attente : applique les
+     * éventuels ajustements de l'Administrateur (Entité/Département/
+     * Fonction Métier/Rôle(s) - il peut très bien garder tel quel ce
+     * que la personne a demandé), active le compte, et envoie le
+     * véritable e-mail de confirmation.
+     */
+    public function approveRegistration(int $userId, UpdateUserData $adjustments, User $actor): User
+    {
+        $this->permissions->ensureCanManageOrganisation($actor);
+
+        $user = $this->users->findById($userId);
+
+        if (! $user->isPendingRegistration()) {
+            throw RegistrationNotPendingException::forUser($user);
+        }
+
+        $user = $this->updateByAdmin($userId, $adjustments, $actor);
+
+        $user->is_active = true;
+        $user->registration_status = RegistrationStatus::Approved;
+        $user->approved_at = now();
+        $user->approved_by = $actor->id;
+        $user->save();
+
+        $this->auditLogger->log($actor->id, 'registration_approved', 'User', $user->id, newValues: ['registration_status' => 'Approved']);
+
+        Mail::to((string) $user->email)->queue(new RegistrationApprovedMail($user));
+
+        return $user;
+    }
+
+    /**
+     * Refuse une auto-inscription en attente - le compte reste
+     * définitivement inutilisable (is_active=false), conservé pour
+     * historique plutôt que supprimé.
+     */
+    public function rejectRegistration(int $userId, ?string $reason, User $actor): User
+    {
+        $this->permissions->ensureCanManageOrganisation($actor);
+
+        $user = $this->users->findById($userId);
+
+        if (! $user->isPendingRegistration()) {
+            throw RegistrationNotPendingException::forUser($user);
+        }
+
+        $user->registration_status = RegistrationStatus::Rejected;
+        $user->rejected_reason = $reason;
+        $user->approved_by = $actor->id;
+        $user->approved_at = now();
+        $user->save();
+
+        $this->auditLogger->log($actor->id, 'registration_rejected', 'User', $user->id, newValues: ['registration_status' => 'Rejected', 'reason' => $reason]);
+
+        Mail::to((string) $user->email)->queue(new RegistrationRejectedMail($user));
+
+        return $user;
     }
 }

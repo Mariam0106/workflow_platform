@@ -48,6 +48,8 @@ class UserController extends Controller
         Gate::authorize('viewAny', User::class);
 
         $search = $request->query('q');
+        $sort = $request->query('sort', 'last_name');
+        $direction = $request->query('direction', 'asc') === 'desc' ? 'desc' : 'asc';
 
         $users = User::query()
             ->with(['department', 'entity', 'applicationRole', 'applicationRoles'])
@@ -55,11 +57,20 @@ class UserController extends Controller
                 ->where('first_name', 'like', "%{$search}%")
                 ->orWhere('last_name', 'like', "%{$search}%")
                 ->orWhere('email', 'like', "%{$search}%")))
-            ->orderBy('last_name')
+            ->when(
+                $sort === 'last_login_at',
+                fn ($q) => $q->orderByRaw('last_login_at IS NULL, last_login_at ' . $direction),
+                fn ($q) => $q->orderBy('last_name', $direction),
+            )
             ->paginate(20)
             ->withQueryString();
 
-        return view('organisation.users.index', ['users' => $users, 'search' => $search]);
+        return view('organisation.users.index', [
+            'users' => $users,
+            'search' => $search,
+            'sort' => $sort,
+            'direction' => $direction,
+        ]);
     }
 
     public function create(): View

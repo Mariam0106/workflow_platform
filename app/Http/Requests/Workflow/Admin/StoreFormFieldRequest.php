@@ -14,7 +14,7 @@ class StoreFormFieldRequest extends FormRequest
      * Types de champs supportés par le moteur de rendu dynamique -
      * voir FormField::isText()/isSelect()/isFile()/isNumber()/isDate().
      */
-    public const FIELD_TYPES = ['text', 'textarea', 'email', 'password', 'number', 'date', 'select', 'file'];
+    public const FIELD_TYPES = ['text', 'textarea', 'email', 'password', 'number', 'montant', 'date', 'select', 'file'];
 
     public function authorize(): bool
     {

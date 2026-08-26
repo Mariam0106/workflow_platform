@@ -36,10 +36,7 @@ Schedule::command('auth:clear-resets')->daily();
 Schedule::command('queue:prune-failed', ['--hours' => 168])->weeklyOn(0, '01:00');
 Schedule::command('queue:prune-batches', ['--hours' => 168])->weeklyOn(0, '01:15');
 
-// --- Workflow : en attente de Mariam ---------------------------------------
-// Dès que `workflow:check-reminders` existe côté Workflow (BR-45/46 -
-// relances de validation en attente), décommenter la ligne suivante.
-// Ne PAS créer de commande vide ici pour "faire passer le test" - le
-// Scheduler ne doit référencer que des commandes qui existent réellement.
-//
-// Schedule::command('workflow:check-reminders')->daily();
+// --- Workflow : rappel quotidien des Validations en attente ---------------
+// BR-45/46 : voir CheckRemindersCommand pour la logique métier - ce
+// fichier ne fait que déclarer le "quand" (9h chaque jour).
+Schedule::command('workflow:check-reminders')->dailyAt('09:00');

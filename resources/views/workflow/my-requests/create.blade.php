@@ -55,9 +55,9 @@
                             </label>
                             <input id="{{ $inputName }}" type="file" name="{{ $inputName }}" @if ($field->is_required) required @endif
                                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
-                                   class="block w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm text-brand-navy shadow-sm transition file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-[13px] file:font-medium file:text-brand-navy hover:file:bg-slate-200 focus:outline-none focus:ring-4 focus:ring-brand-blue/10 {{ $errors->has($inputName) ? 'border-red-300 focus:border-red-400 focus:ring-red-100' : 'border-brand-border focus:border-brand-blue focus:ring-brand-blue/10' }}">
+                                   class="block w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm text-brand-navy shadow-sm transition file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-[13px] file:font-medium file:text-brand-navy hover:file:bg-slate-200 focus:outline-none focus:ring-4 focus:ring-brand-blue/10 {{ $errors->has($oldKey) ? 'border-red-300 focus:border-red-400 focus:ring-red-100' : 'border-brand-border focus:border-brand-blue focus:ring-brand-blue/10' }}">
                             <p class="mt-1 text-xs text-slate-400">PDF, image, Word ou Excel — 10 Mo max. Envoyé avec la demande (pas sauvegardé dans le brouillon automatique).</p>
-                            @error($inputName) <p class="mt-1 text-xs text-brand-danger">{{ $message }}</p> @enderror
+                            @error($oldKey) <p class="mt-1 text-xs text-brand-danger">{{ $message }}</p> @enderror
                         </div>
                     @elseif ($field->isSelect())
                         @php
@@ -75,7 +75,7 @@
                         <div>
                             <x-form-select :name="$inputName" :label="$field->label" :required="$field->is_required"
                                             :options="$field->fieldOptions" valueKey="value" labelKey="label"
-                                            :value="$selectValue"
+                                            :value="$selectValue" :error-key="$oldKey"
                                             :data-other-select="$freeTextOption ? $inputName : null" />
 
                             @if ($freeTextOption)
@@ -86,15 +86,41 @@
                             @endif
                         </div>
                     @elseif ($field->isDate())
-                        <x-form-input :name="$inputName" type="date" :label="$field->label" :required="$field->is_required" :value="old($oldKey, $draftValue ?? $field->default_value)" />
+                        <x-form-input :name="$inputName" type="date" :label="$field->label" :required="$field->is_required" :value="old($oldKey, $draftValue ?? $field->default_value)" :error-key="$oldKey" />
+                    @elseif ($field->isMontant())
+                        @php
+                            $rawMontant = old($oldKey, $draftValue ?? $field->default_value);
+                            $displayMontant = $rawMontant !== null && $rawMontant !== ''
+                                ? number_format((float) str_replace(',', '.', (string) $rawMontant), 2, ',', ' ')
+                                : '';
+                        @endphp
+                        <div>
+                            <label for="{{ $inputName }}_display" class="mb-1.5 block text-[13px] font-medium text-slate-700">
+                                {{ $field->label }} @if ($field->is_required) <span class="text-brand-danger">*</span> @endif
+                            </label>
+                            <div class="relative">
+                                <input type="text" id="{{ $inputName }}_display" inputmode="decimal" autocomplete="off"
+                                       value="{{ $displayMontant }}" placeholder="0,00"
+                                       data-montant-display="{{ $inputName }}"
+                                       @if ($field->is_required) required @endif
+                                       class="block w-full rounded-lg border bg-white px-3.5 py-2.5 pr-14 text-sm text-brand-navy shadow-sm transition focus:outline-none focus:ring-4 {{ $errors->has($oldKey) ? 'border-red-300 focus:border-red-400 focus:ring-red-100' : 'border-brand-border focus:border-brand-blue focus:ring-brand-blue/10' }}">
+                                <span class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-400">MAD</span>
+                            </div>
+                            <input type="hidden" name="{{ $inputName }}" data-montant-value="{{ $inputName }}"
+                                   value="{{ $rawMontant !== null ? str_replace(',', '.', (string) $rawMontant) : '' }}">
+                            @if ($field->placeholder)
+                                <p class="mt-1 text-xs text-slate-400">{{ $field->placeholder }}</p>
+                            @endif
+                            @error($oldKey) <p class="mt-1 text-xs text-brand-danger">{{ $message }}</p> @enderror
+                        </div>
                     @elseif ($field->isNumber())
                         <x-form-input :name="$inputName" type="number" :label="$field->label" :required="$field->is_required"
-                                       :value="old($oldKey, $draftValue ?? $field->default_value)" />
+                                       :value="old($oldKey, $draftValue ?? $field->default_value)" :error-key="$oldKey" />
                     @elseif ($field->field_type === 'textarea')
-                        <x-form-textarea :name="$inputName" :label="$field->label" :required="$field->is_required" :value="old($oldKey, $draftValue ?? $field->default_value)" />
+                        <x-form-textarea :name="$inputName" :label="$field->label" :required="$field->is_required" :value="old($oldKey, $draftValue ?? $field->default_value)" :error-key="$oldKey" />
                     @else
                         <x-form-input :name="$inputName" :type="$field->field_type" :label="$field->label" :required="$field->is_required"
-                                       :value="old($oldKey, $draftValue ?? $field->default_value)" :placeholder="$field->placeholder" />
+                                       :value="old($oldKey, $draftValue ?? $field->default_value)" :placeholder="$field->placeholder" :error-key="$oldKey" />
                     @endif
                 @endforeach
                 @if ($pageIndex >= 0) </div> @endif
@@ -164,6 +190,46 @@
                     input.disabled = !isOther;
                     if (isOther) input.focus();
                 });
+            });
+
+            // ==================================================
+            // Champ "Montant" - un champ visible (affiché, formaté
+            // "150 000,00") synchronisé vers un champ caché qui, lui,
+            // porte le vrai nom du champ et une valeur numérique
+            // propre ("150000.00") - c'est ce champ caché qui part
+            // réellement à l'envoi et au brouillon automatique.
+            // ==================================================
+            document.querySelectorAll('[data-montant-display]').forEach(function (display) {
+                var key = display.getAttribute('data-montant-display');
+                var hidden = form.querySelector('[data-montant-value="' + key + '"]');
+                if (!hidden) return;
+
+                function syncRawValue() {
+                    // Empêche aussi les lettres dans le champ visible
+                    // lui-même (pas seulement dans la valeur cachée) -
+                    // un montant ne doit jamais accepter de lettres,
+                    // au même titre qu'un champ "code".
+                    var cleanedDisplay = display.value.replace(/[^0-9,\s]/g, '');
+                    if (cleanedDisplay !== display.value) {
+                        display.value = cleanedDisplay;
+                    }
+
+                    var raw = display.value
+                        .replace(/\s/g, '')
+                        .replace(',', '.')
+                        .replace(/[^0-9.]/g, '');
+                    hidden.value = raw;
+                }
+
+                display.addEventListener('input', syncRawValue);
+
+                display.addEventListener('blur', function () {
+                    var num = parseFloat(hidden.value);
+                    if (isNaN(num)) return;
+                    display.value = num.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                });
+
+                syncRawValue();
             });
 
             // ==================================================
