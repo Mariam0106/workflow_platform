@@ -1,15 +1,15 @@
 @component('mail::message')
 # Bienvenue, {{ $user->first_name }} !
 
-Ta demande d'inscription sur **Workflow Platform** a été **approuvée** par un Administrateur.
+Votre demande d'inscription sur **Workflow Platform** a été **approuvée** par {{ $user->approver?->full_name ?? 'un Administrateur' }}.
 
-Tu peux maintenant te connecter avec l'adresse e-mail et le mot de passe que tu as choisis à l'inscription.
+Vous pouvez maintenant vous connecter avec l'adresse e-mail et le mot de passe choisis lors de votre inscription.
 
 @component('mail::button', ['url' => route('login')])
 Me connecter
 @endcomponent
 
-Si tu n'es pas à l'origine de cette demande, contacte immédiatement un Administrateur.
+Si vous n'êtes pas à l'origine de cette demande, contactez immédiatement un Administrateur.
 
 Merci,<br>
 {{ config('app.name') }}
