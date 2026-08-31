@@ -9,7 +9,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      *
-     * CORRECTION (Etape 0) :
+     * CORRECTION:
      * - field_name (chaine libre) remplace par form_field_id (FK vers
      *   form_fields) : garantit qu'une condition ne peut jamais
      *   pointer vers un champ de formulaire qui n'existe pas/plus

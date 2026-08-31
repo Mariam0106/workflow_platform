@@ -13,7 +13,7 @@ use InvalidArgumentException;
  * CreateWorkflowStepData
  * ==========================================================================
  *
- * Ce qu'un futur WorkflowConfigurationService (BackOffice, Etape 12/15)
+ * Ce qu'un futur WorkflowConfigurationService (BackOffice, Étape 12/15)
  * recevra pour ajouter un Step a un Workflow.
  * ==========================================================================
  */
@@ -34,7 +34,7 @@ final readonly class CreateWorkflowStepData
             throw new InvalidArgumentException('A Workflow Step cannot be both the start and the end Step.');
         }
 
-        // ValidatorType::Role/User exigent une reference precise
+        // ValidatorType::Role/User exigent une référence precise
         // (l'id du role ou de l'utilisateur) ; NPlus1/EntityManager/
         // DepartmentManager la resolvent dynamiquement et n'en ont pas
         // besoin (BR-59).

@@ -17,7 +17,7 @@ use App\Models\Workflow;
  * version must be created instead.
  *
  * IMPORTANT : before() ne court-circuite JAMAIS update()/delete(). BR-26
- * est une regle absolue, pas juste une question de permission - meme un
+ * est une règle absolue, pas juste une question de permission - même un
  * Administrateur ne doit pas pouvoir modifier un Workflow publie
  * directement. before() n'accelere donc que les capacites qui ne sont
  * pas verrouillees par le cycle de vie (viewAny/view/create).
@@ -63,8 +63,8 @@ class WorkflowPolicy
      * encore en brouillon - jamais un archivé, qui peut encore être
      * référencé par des Demandes historiques (contrairement à
      * !isPublished(), qui aurait aussi autorisé un Workflow archivé).
-     * La verification "ce Workflow est-il encore reference par un
-     * Formulaire" releve du Service (integrite des donnees), pas de
+     * La verification "ce Workflow est-il encore référence par un
+     * Formulaire" releve du Service (integrite des données), pas de
      * cette Policy (autorisation de l'acteur).
      */
     public function delete(User $user, Workflow $workflow): bool

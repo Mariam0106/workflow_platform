@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 // NOTE: form_field_id replaces the previous free-text "field_name" column
-// (Etape 0 correction) - guarantees a condition can never reference a
+// - guarantees a condition can never référence a
 // Form Field that does not exist or was deleted (referential integrity).
 
 /**

@@ -104,19 +104,26 @@ class SubmitRequestRequest extends FormRequest
 
         if ($form !== null) {
             foreach ($form->formFields as $field) {
-                $rules["values.{$field->id}"] = [
-                    $field->is_required ? 'required' : 'nullable',
-                    'string',
-                    'max:5000',
-                ];
-
-                if ($field->field_type === 'number') {
-                    $rules["values.{$field->id}"][] = 'numeric';
-                } elseif ($field->isMontant()) {
-                    // BR (Montant) : toujours un nombre positif ou nul -
-                    // un montant négatif n'a pas de sens métier ici.
-                    $rules["values.{$field->id}"][] = 'numeric';
-                    $rules["values.{$field->id}"][] = 'min:0';
+                if ($field->field_type === 'number' || $field->isMontant()) {
+                    // BR (Nombre/Montant) : jamais de règle "string" +
+                    // "max:5000" ici - combinée à "numeric", Laravel
+                    // réinterprète max:X comme une BORNE NUMÉRIQUE (la
+                    // valeur elle-même ne doit pas dépasser X), pas une
+                    // longueur de texte. Un vrai montant (ex.
+                    // 1 250 000) serait alors rejeté à tort.
+                    $rules["values.{$field->id}"] = [
+                        $field->is_required ? 'required' : 'nullable',
+                        'numeric',
+                    ];
+                    if ($field->isMontant()) {
+                        $rules["values.{$field->id}"][] = 'min:0';
+                    }
+                } else {
+                    $rules["values.{$field->id}"] = [
+                        $field->is_required ? 'required' : 'nullable',
+                        'string',
+                        'max:5000',
+                    ];
                 }
             }
         }

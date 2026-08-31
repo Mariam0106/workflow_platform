@@ -19,8 +19,8 @@ use Illuminate\Notifications\Notification;
  * (Illuminate\Notifications\Notification) - le mecanisme d'envoi
  * effectif (email) - toujours utiliser le nom complet dans les imports.
  *
- * Volontairement generique : le titre/message sont deja composes par
- * SendNotification (Etape 9) au moment de creer l'enregistrement
+ * Volontairement générique : le titre/message sont deja composes par
+ * SendNotification au moment de creer l'enregistrement
  * App\Models\Notification - cette classe se contente de les mettre en
  * forme pour un email, sans connaitre le detail metier (BR-21 a BR-41)
  * qui a motive l'envoi.

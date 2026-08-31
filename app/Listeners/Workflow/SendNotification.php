@@ -21,9 +21,9 @@ use Illuminate\Support\Collection;
  * ==========================================================================
  *
  * BR-43 : les Notifications sont generees automatiquement. Cree les
- * enregistrements Notification (statut Pending) - l'envoi reel (Email/
+ * enregistrements Notification (statut Pending) - l'envoi réel (Email/
  * In-App) est delegue a QueueEmails / NotificationSenderInterface
- * (Etape 12), volontairement separe : cette classe decide QUI doit
+ *, volontairement separe: cette classe decide QUI doit
  * etre notifie et POURQUOI, pas COMMENT le message part reellement.
  * ==========================================================================
  */

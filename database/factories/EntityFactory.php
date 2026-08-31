@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends Factory<Entity>
  *
- * NOTE (Etape 0) : factory minimale, juste suffisante pour valider la
- * stabilisation (migrate:fresh --seed). Sera enrichie a l'Etape 4
+ * NOTE: factory minimale, juste suffisante pour valider la
+ * stabilisation (migrate:fresh --seed). Sera enrichie a l'Étape 4
  * (Models, Factories & Seeders) du roadmap.
  */
 class EntityFactory extends Factory

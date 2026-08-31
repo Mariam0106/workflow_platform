@@ -11,7 +11,7 @@ namespace App\Enums;
  *
  * BR-59 : the Workflow Engine must determine the next validator generically,
  * from configuration - never from hard-coded conditions. This enum is the
- * closed list of resolution strategies the ValidatorResolverService (Etape 9)
+ * closed list of resolution stratégies the ValidatorResolverService
  * will support. workflow_steps.validator_reference is interpreted
  * differently depending on this type:
  *

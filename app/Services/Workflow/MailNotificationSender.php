@@ -17,16 +17,16 @@ use Throwable;
  * MailNotificationSender
  * ==========================================================================
  *
- * Implementation REELLE de NotificationSenderInterface (Etape 7),
- * remplace le placeholder LogNotificationSender (Etape 9). BR-44 :
+ * Implementation REELLE de NotificationSenderInterface,
+ * remplace le placeholder LogNotificationSender. BR-44:
  * n'envoie reellement que le canal Email pour l'instant - le canal
  * In-App n'a pas de mecanisme de "push" externe (il est deja visible
- * des sa creation en base, via l'API - Etape 11), donc simplement
+ * des sa creation en base, via l'API - Étape 11), donc simplement
  * marque comme livre.
  *
  * BR-47 : respecte config('workflow.notification_retry_attempts')
- * (Etape 2) via Notification::hasExceededRetryLimit() - abandonne
- * proprement (log + statut Failed) plutot que de boucler indefiniment.
+ * via Notification::hasExceededRetryLimit() - abandonne
+ * proprement (log + statut Failed) plutôt que de boucler indefiniment.
  * ==========================================================================
  */
 class MailNotificationSender implements NotificationSenderInterface

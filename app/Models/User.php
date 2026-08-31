@@ -467,7 +467,7 @@ class User extends Authenticatable
     /**
      * Route notifications for the mail channel.
      *
-     * NOTE (Etape 3) : email is now cast to the CompanyEmail Value Object -
+     * NOTE: email is now cast to the CompanyEmail Value Object -
      * Notifiable's default routeNotificationForMail() would otherwise hand
      * that object straight to the mailer instead of a plain string.
      */

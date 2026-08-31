@@ -42,7 +42,7 @@ use Illuminate\Database\Seeder;
  * DatabaseSeeder
  * ==========================================================================
  *
- * Etape 4 : jeu de donnees de reference realiste, couvrant :
+ * Étape 4 : jeu de données de référence realiste, couvrant :
  * - la hierarchie organisationnelle complete (Entity/Department/
  *   BusinessFunction/ApplicationRole/User, y compris le N+1 - BR-03/04/05/06)
  * - un Workflow PUBLIE a 4 Steps avec des Transitions conditionnelles
@@ -53,8 +53,8 @@ use Illuminate\Database\Seeder;
  *   (Draft, Submitted en cours de validation, Completed avec historique
  *   complet, pieces jointes, notifications et audit)
  *
- * Sert de fixture de reference pour les tests du moteur de workflow
- * (Etape 9).
+ * Sert de fixture de référence pour les tests du moteur de workflow
+ *.
  * ==========================================================================
  */
 class DatabaseSeeder extends Seeder
@@ -86,7 +86,7 @@ class DatabaseSeeder extends Seeder
 
         // Fonctions transverses (BR-05, exemples du cahier des charges :
         // Commercial / Credit Client / DAF / DG). Reutilisables partout,
-        // pas rattachees a un seul departement (correction Etape 0).
+        // pas rattachees a un seul departement (correction Étape 0).
         $fnDG = BusinessFunction::factory()->create(['code' => 'DG', 'name' => 'Direction Generale']);
         $fnDAF = BusinessFunction::factory()->create(['code' => 'DAF', 'name' => 'Direction Administrative et Financiere']);
         $fnCommercial = BusinessFunction::factory()->create(['code' => 'COM', 'name' => 'Commercial']);
@@ -116,7 +116,7 @@ class DatabaseSeeder extends Seeder
         // ET Administrateur (il configure aussi le BackOffice pour son
         // perimetre). Demontre le multi-role + le changement de Role
         // actif de session (voir ActiveRoleController) sur un jeu de
-        // donnees realiste plutot qu'un utilisateur de test artificiel.
+        // données realiste plutôt qu'un utilisateur de test artificiel.
         $financeManager = User::factory()->create([
             'entity_id' => $hq->id,
             'department_id' => $financeDept->id,
@@ -252,9 +252,9 @@ class DatabaseSeeder extends Seeder
             'display_order' => 3,
         ]);
 
-        // Options du champ "Country" - table field_options plutot que
-        // JSON (voir LISEZMOI Etape 4bis) : chaque option est
-        // desactivable / reordonnable independamment.
+        // Options du champ "Country" - table field_options plutôt que
+        // JSON (voir LISEZMOI Étape 4bis) : chaque option est
+        // desactivable / reordonnable indépendamment.
         FieldOption::factory()->create(['form_field_id' => $fieldCountry->id, 'value' => 'MA', 'label' => 'Maroc', 'display_order' => 1, 'is_default' => true, 'created_by' => $ceo->id]);
         FieldOption::factory()->create(['form_field_id' => $fieldCountry->id, 'value' => 'FR', 'label' => 'France', 'display_order' => 2, 'created_by' => $ceo->id]);
         FieldOption::factory()->create(['form_field_id' => $fieldCountry->id, 'value' => 'ES', 'label' => 'Espagne', 'display_order' => 3, 'created_by' => $ceo->id]);

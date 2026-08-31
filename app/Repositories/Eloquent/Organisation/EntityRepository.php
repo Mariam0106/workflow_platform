@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Collection;
  * EntityRepository
  * ==========================================================================
  *
- * Eloquent-based implementation of EntityRepositoryInterface.
+ * Eloquent-based implémentation of EntityRepositoryInterface.
  *
  * Business Rules covered
  * --------------------------------------------------------------------------

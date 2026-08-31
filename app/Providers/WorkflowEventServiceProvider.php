@@ -21,9 +21,9 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
  * Enregistrement EXPLICITE des Events/Listeners du domaine Workflow -
  * pas d'auto-decouverte magique, pour que n'importe qui puisse voir en
  * un coup d'oeil "quel Listener reagit a quel Event" dans un seul
- * fichier. Meme principe que WorkflowServiceProvider (Etape 8) :
+ * fichier. Meme principe que WorkflowServiceProvider:
  * chaque domaine a son propre Provider dedie, zero risque de conflit
- * Git avec le futur equivalent Organisation du collegue.
+ * Git avec le futur equivalent Organisation du collègue.
  * ==========================================================================
  */
 class WorkflowEventServiceProvider extends ServiceProvider

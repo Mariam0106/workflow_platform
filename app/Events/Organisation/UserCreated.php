@@ -22,7 +22,7 @@ use Illuminate\Queue\SerializesModels;
  * Admin-initiated creation - Étape 13) since both go through
  * UserService::createUser() internally.
  *
- * Consumers (Étape 9, Workflow side - Lali) : typically a welcome email
+ * Consumers: typically a welcome email
  * Listener, and/or an audit log entry. This class only carries data, it
  * has no opinion on what happens next.
  * ==========================================================================

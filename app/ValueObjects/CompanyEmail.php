@@ -19,7 +19,7 @@ use Stringable;
  * Validates that a string is a well-formed email address AND, when
  * config('workflow.company_email_domains') is non-empty, that its domain
  * belongs to the configured whitelist. This is what the registration
- * screen (Etape 12) will use to reject personal email addresses.
+ * screen will use to reject personal email addresses.
  *
  * If no domain is configured yet (fresh install), only the email FORMAT
  * is validated - the platform never blocks everyone before an

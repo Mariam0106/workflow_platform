@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends Factory<ApplicationRole>
  *
- * NOTE (Etape 1) : "code" est maintenant caste vers l'Enum
+ * NOTE: "code" est maintenant caste vers l'Enum
  * ApplicationRoleCode (ADMIN/USER/VALIDATOR uniquement, BR-06) - la
  * factory ne doit donc produire qu'une de ces 3 valeurs, jamais un
  * code invente aleatoirement.

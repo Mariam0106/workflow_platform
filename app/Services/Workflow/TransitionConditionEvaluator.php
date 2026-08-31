@@ -18,7 +18,7 @@ use Illuminate\Support\Collection;
  * responsabilite : etant donne une Condition et les valeurs d'une
  * Request, dire si elle est vraie ou fausse. Aucune dependance a
  * Eloquent au-dela des Models deja charges - testable sans base de
- * donnees (mocks).
+ * données (mocks).
  * ==========================================================================
  */
 class TransitionConditionEvaluator
@@ -59,7 +59,7 @@ class TransitionConditionEvaluator
      * Convention : le logical_operator porte par une Condition decrit
      * comment ELLE se combine avec le resultat accumule des Conditions
      * PRECEDENTES (pli gauche-a-droite, dans l'ordre d'execution_order).
-     * La toute premiere Condition n'a pas de "precedent" - son propre
+     * La toute première Condition n'a pas de "precedent" - son propre
      * logical_operator est ignore pour elle.
      *
      * Une liste VIDE de Conditions est considere vraie par convention :

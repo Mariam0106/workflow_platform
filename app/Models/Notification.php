@@ -230,7 +230,7 @@ class Notification extends Model
     /**
      * Determine whether this notification has used up its retry budget
      * (BR-47). Reads config('workflow.notification_retry_attempts') -
-     * Etape 2 - so the limit can be tuned without a code change.
+     * Étape 2 - so the limit can be tuned without a code change.
      */
     public function hasExceededRetryLimit(): bool
     {

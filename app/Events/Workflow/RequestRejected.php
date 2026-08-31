@@ -16,8 +16,8 @@ use Illuminate\Queue\SerializesModels;
  * ==========================================================================
  *
  * Leve par WorkflowEngineService::recordValidation() sur une decision
- * Rejected (BR-39 : le Workflow se termine immediatement). Distinct de
- * WorkflowFinished : un rejet est une fin en echec, pas un
+ * Rejected (BR-39 : le Workflow se termine immédiatement). Distinct de
+ * WorkflowFinished : un rejet est une fin en échec, pas un
  * aboutissement - les Listeners (notification, audit) ont souvent un
  * comportement different pour les deux.
  */

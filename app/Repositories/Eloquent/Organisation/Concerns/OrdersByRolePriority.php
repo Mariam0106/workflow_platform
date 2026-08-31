@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Builder;
  * Why this exists
  * --------------------------------------------------------------------------
  * `application_roles` has NO priority/level column - only `id`, `code`,
- * `name`. Sorting on `application_role_id` (the previous implementation)
+ * `name`. Sorting on `application_role_id` (the previous implémentation)
  * silently assumes ADMIN was seeded first, which is an insertion-order
  * accident, not a real hierarchy. If seed order ever changes, the wrong
  * "manager" gets resolved with no error at all - a serious risk for

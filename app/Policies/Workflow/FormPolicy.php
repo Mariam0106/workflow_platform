@@ -14,9 +14,9 @@ use App\Models\User;
  * ==========================================================================
  *
  * Meme principe que WorkflowPolicy (BR-26 applique par analogie aux
- * Forms : le meme cycle de vie Draft/Published/Archived existe pour les
+ * Forms : le même cycle de vie Draft/Published/Archived existe pour les
  * deux, cf. l'audit BR - un Form publie ne doit pas etre modifiable
- * directement non plus, pour la meme raison : des Requests existantes
+ * directement non plus, pour la même raison : des Requests existantes
  * en dependent).
  * ==========================================================================
  */

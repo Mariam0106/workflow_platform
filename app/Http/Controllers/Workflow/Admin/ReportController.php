@@ -27,7 +27,7 @@ class ReportController extends Controller
         // (tout Utilisateur authentifie peut voir SES PROPRES Requests
         // via "Mes demandes") - impropre pour gater un ecran de
         // reporting global, reserve aux Administrateurs. On verifie
-        // donc directement le Role actif plutot que de reutiliser cette
+        // donc directement le Role actif plutôt que de reutiliser cette
         // habilite hors de son contexte.
         abort_unless($request->user()->hasRole(ApplicationRoleCode::Administrator), 403);
 

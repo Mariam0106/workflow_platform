@@ -19,8 +19,8 @@ use Illuminate\Queue\SerializesModels;
  * Approved (BR-41), que la Request avance simplement d'une Step ou
  * qu'elle atteigne son Step finale (dans ce dernier cas,
  * WorkflowFinished est leve EN PLUS de celui-ci, pas a la place - un
- * Listener interesse seulement par "approbation d'etape" n'a pas besoin
- * de savoir si c'etait la derniere).
+ * Listener interesse seulement par "approbation d'étape" n'a pas besoin
+ * de savoir si c'etait la dernière).
  */
 class RequestApproved
 {

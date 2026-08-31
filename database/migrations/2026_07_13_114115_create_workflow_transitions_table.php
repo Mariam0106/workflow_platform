@@ -9,7 +9,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      *
-     * CORRECTION (Etape 0) :
+     * CORRECTION:
      * Ajout de priority, description et is_active - presents dans le
      * Model (WorkflowTransition) mais absents de cette migration.
      * "priority" est indispensable pour BR-23 (arbitrage entre

@@ -16,7 +16,7 @@ use Illuminate\Queue\SerializesModels;
  *
  * Leve par WorkflowEngineService::submit() une fois la Request creee et
  * positionnee sur son Step de depart (BR-28/29/34/35). Les Listeners
- * (SendNotification, CreateAuditLog) reagissent a cet evenement plutot
+ * (SendNotification, CreateAuditLog) reagissent a cet événement plutôt
  * que d'etre appeles en dur depuis le Service - le moteur reste
  * decouple de "qui doit etre notifie" / "comment auditer".
  */

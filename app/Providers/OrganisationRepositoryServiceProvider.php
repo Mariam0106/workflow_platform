@@ -20,11 +20,11 @@ use Illuminate\Support\ServiceProvider;
  * ==========================================================================
  *
  * Registers the Organisation module's repository interfaces with their
- * Eloquent-based implementations in the service container.
+ * Eloquent-based implémentations in the service container.
  *
  * This ensures that whenever a controller, service, or another repository
  * type-hints one of the Organisation repository interfaces, Laravel's IoC
- * container automatically injects the correct concrete implementation.
+ * container automatically injects the correct concrete implémentation.
  *
  * Registered bindings
  * -------------------

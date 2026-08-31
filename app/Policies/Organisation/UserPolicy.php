@@ -12,7 +12,7 @@ use App\Services\Organisation\PermissionService;
  * UserPolicy
  * ==========================================================================
  *
- * Gates the Controller layer (Étape 11) for User-related actions.
+ * Gates the Controller layer for User-related actions.
  *
  * Deliberately delegates role checks to PermissionService rather than
  * re-implementing them - a Policy answers "can $actor do X to $target",
@@ -45,7 +45,7 @@ class UserPolicy
     }
 
     /**
-     * BackOffice user list (Étape 13/14) - Administrator only (via before()).
+     * BackOffice user list - Administrator only (via before()).
      */
     public function viewAny(User $actor): bool
     {
@@ -61,7 +61,7 @@ class UserPolicy
     }
 
     /**
-     * Admin-initiated creation (Étape 13) - Administrator only (via before()).
+     * Admin-initiated creation - Administrator only (via before()).
      * Self-registration (Jalon J1) does not go through this Policy at all -
      * it's an unauthenticated, public flow.
      */

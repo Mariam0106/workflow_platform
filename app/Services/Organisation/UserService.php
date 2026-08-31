@@ -41,7 +41,7 @@ use Illuminate\Support\Facades\Mail;
  * Business Rules covered
  * --------------------------------------------------------------------------
  * BR-03/04/05/06  Entity/Department/BusinessFunction/ApplicationRole are
- *                 mandatory and must reference active records (BR-09).
+ *                 mandatory and must référence active records (BR-09).
  * BR-07           Only active Users may log in (enforced at auth time,
  *                 not here - see LoginRequest::authenticate()).
  * BR-69           Chaque action est journalisée - le mot de passe (haché
@@ -124,7 +124,7 @@ class UserService
     }
 
     /**
-     * Admin-initiated creation (Étape 13 - BackOffice user management).
+     * Admin-initiated creation.
      *
      * @throws UnauthorizedActionException
      */

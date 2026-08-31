@@ -23,7 +23,7 @@ interface WorkflowRepositoryInterface
     public function findById(int $id): ?Workflow;
 
     /**
-     * BR-25 : resout la derniere version PUBLIEE d'un Workflow, a
+     * BR-25 : resout la dernière version PUBLIEE d'un Workflow, a
      * utiliser au moment de soumettre une nouvelle Request. Retourne
      * null si aucune version de ce code n'a jamais ete publiee.
      */
@@ -31,15 +31,15 @@ interface WorkflowRepositoryInterface
 
     /**
      * Charge le Workflow avec ses Steps et Transitions - evite le
-     * probleme N+1 quand le moteur (Etape 9) doit parcourir tout le
+     * probleme N+1 quand le moteur doit parcourir tout le
      * graphe d'un coup.
      */
     public function findWithStepsAndTransitions(int $id): ?Workflow;
 
     /**
      * Toutes les versions (Draft/Published/Archived confondues)
-     * partageant le meme code - utile pour l'ecran d'administration
-     * "historique des versions" (Etape 15).
+     * partageant le même code - utile pour l'ecran d'administration
+     * "historique des versions".
      */
     public function findAllVersions(string $code): Collection;
 

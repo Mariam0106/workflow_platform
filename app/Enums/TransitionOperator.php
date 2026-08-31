@@ -9,7 +9,7 @@ namespace App\Enums;
  * TransitionOperator Enum
  * ==========================================================================
  *
- * BR-21 : comparison operators the TransitionConditionEvaluator (Etape 9)
+ * BR-21: comparison operators the TransitionConditionEvaluator
  * will support when comparing a RequestValue against
  * transition_conditions.expected_value.
  */

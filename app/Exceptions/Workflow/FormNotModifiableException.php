@@ -9,7 +9,7 @@ use App\Models\Form;
 /**
  * BR-18 : "Une Version de Formulaire publiée devient immuable." - mirrors
  * WorkflowNotModifiableException exactly, same reasoning (Requests may
- * already reference this exact version).
+ * already référence this exact version).
  */
 class FormNotModifiableException extends WorkflowEngineException
 {

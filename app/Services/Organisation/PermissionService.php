@@ -15,7 +15,7 @@ use App\Models\User;
  *
  * Coarse-grained role checks (BR-06 : a User has exactly one Application
  * Role among ADMIN / VALIDATOR / USER). Used by UserService/DepartmentService
- * to guard admin-only actions before Policies exist (Étape 10).
+ * to guard admin-only actions before Policies exist.
  *
  * This is NOT a replacement for Policies - it answers "is this role
  * allowed to even attempt this kind of action", not "is this specific

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends Factory<Department>
  *
- * NOTE (Etape 0) : factory minimale - voir EntityFactory.
+ * NOTE: factory minimale - voir EntityFactory.
  */
 class DepartmentFactory extends Factory
 {

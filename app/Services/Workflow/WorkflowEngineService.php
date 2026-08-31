@@ -36,7 +36,7 @@ use Illuminate\Support\Facades\Event;
  * WorkflowEngineService (le coeur de la plateforme)
  * ==========================================================================
  *
- * Seule classe que les Controllers (Etape 12) appelleront pour soumettre
+ * Seule classe que les Controllers appelleront pour soumettre
  * une Request ou enregistrer une Validation. Toute la logique metier
  * (BR-21 a BR-42) vit ici et dans les 3 briques qu'elle orchestre
  * (TransitionConditionEvaluator, ValidatorResolverService,
@@ -60,7 +60,7 @@ class WorkflowEngineService implements WorkflowEngineInterface
      *         Form (pas forcement celle que le Form pointe directement -
      *         un Form peut avoir ete configure avec une version qui,
      *         depuis, a ete remplacee par une version plus recente).
-     * BR-29 : genere une reference unique.
+     * BR-29 : genere une référence unique.
      * BR-34/35 : fige la version de Workflow utilisee sur la Request.
      *
      * @throws FormNotPublishedException si le Form n'existe pas ou n'est pas publie.
@@ -135,7 +135,7 @@ class WorkflowEngineService implements WorkflowEngineInterface
         });
 
         // Evenement leve APRES le commit de la transaction (jamais dedans) :
-        // un Listener ne doit jamais reagir a des donnees susceptibles
+        // un Listener ne doit jamais reagir a des données susceptibles
         // d'etre annulees par un rollback.
         Event::dispatch(new RequestSubmitted($request));
 
@@ -234,11 +234,11 @@ class WorkflowEngineService implements WorkflowEngineInterface
      * BR-36 : seul le Validateur assigne peut valider.
      * BR-37 : chaque Validation est timestampee.
      * BR-38 : Approve ou Reject uniquement (garanti par l'Enum
-     *         ValidationDecision, Etape 1).
-     * BR-39 : Reject termine immediatement le Workflow.
+     *         ValidationDecision, Étape 1).
+     * BR-39 : Reject termine immédiatement le Workflow.
      * BR-40 : commentaire de rejet obligatoire (deja garanti par le DTO
-     *         RecordValidationData, Etape 6 - ValidationNotAllowedException y est
-     *         deja levee avant meme d'atteindre cette methode).
+     *         RecordValidationData, Étape 6 - ValidationNotAllowedException y est
+     *         deja levee avant même d'atteindre cette methode).
      * BR-41 : Approve execute automatiquement la Transition eligible.
      *
      * @throws InvalidRequestStatusException si la Request n'est plus modifiable

@@ -9,11 +9,11 @@ return new class extends Migration
     /**
      * Run the migrations.
      *
-     * CORRECTION (Etape 0) :
+     * CORRECTION:
      * Ajout de workflow_transition_id (nullable) : permet de savoir non
      * seulement PAR QUELLES ETAPES une Request est passee, mais aussi
-     * QUELLE transition a cause chaque changement d'etape. Nullable
-     * car la toute premiere etape est atteinte directement a la
+     * QUELLE transition a cause chaque changement d'étape. Nullable
+     * car la toute première étape est atteinte directement a la
      * soumission, pas via une transition.
      */
     public function up(): void
@@ -38,9 +38,9 @@ return new class extends Migration
                   ->nullOnDelete()
                   ->cascadeOnUpdate();
 
-            // Quel utilisateur a declenche ce changement d'etape (une
-            // Validation en general - nullable car la toute premiere
-            // etape est atteinte automatiquement a la soumission, sans
+            // Quel utilisateur a declenche ce changement d'étape (une
+            // Validation en general - nullable car la toute première
+            // étape est atteinte automatiquement a la soumission, sans
             // action de validation).
             $table->foreignId('triggered_by')
                   ->nullable()

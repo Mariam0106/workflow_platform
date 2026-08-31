@@ -18,7 +18,7 @@ use App\Services\Workflow\ValidatorResolverService;
  * BR-31 : apres soumission, la Request devient lecture seule.
  * BR-32 : une Request rejetee ne peut plus etre modifiee.
  *
- * S'appuie sur ValidatorResolverService (Etape 8) plutot que de
+ * S'appuie sur ValidatorResolverService plutôt que de
  * reimplementer une logique de resolution de validateur ici - une seule
  * source de verite pour "qui peut agir sur cette Request".
  * ==========================================================================

@@ -22,8 +22,8 @@ use Illuminate\Support\Collection;
  * TransitionConditionEvaluator) sont vraies. Une Transition par defaut
  * (sans Condition) evalue toujours a "vrai" (cf. evaluateAll() sur une
  * liste vide) - il suffit donc de lui donner la priorite la plus basse
- * pour qu'elle ne serve que de filet de securite. Aucune branche
- * "if is_default" separee n'est necessaire : c'est la meme regle qui
+ * pour qu'elle ne serve que de filet de sécurité. Aucune branche
+ * "if is_default" separee n'est nécessaire : c'est la même règle qui
  * s'applique a toutes les transitions.
  * ==========================================================================
  */

@@ -19,7 +19,7 @@ use Illuminate\Validation\Validator;
  * ==========================================================================
  *
  * Partial update - every field is `sometimes`, matching UpdateUserData's
- * "only apply what was actually provided" semantics (Étape 6). Used by
+ * "only apply what was actually provided" semantics. Used by
  * both self-service (own profile) and Admin edits - UserController
  * decides which UserService method to call based on who $actor is; the
  * Policy (UserPolicy::update()) already restricted *who* may reach this
@@ -62,7 +62,7 @@ class UpdateUserRequest extends FormRequest
 
             // BR-06 : re-attribution complete des Roles autorises - si
             // 'application_role_ids' est fourni, il remplace la liste
-            // entiere (comportement `sync`, voir UserRepository).
+            // entière (comportement `sync`, voir UserRepository).
             'application_role_ids' => ['sometimes', 'array', 'min:1'],
             'application_role_ids.*' => ['integer', 'distinct', Rule::exists(ApplicationRole::class, 'id')->where('is_active', true)],
             'default_application_role_id' => ['sometimes', 'integer', Rule::exists(ApplicationRole::class, 'id')->where('is_active', true)],

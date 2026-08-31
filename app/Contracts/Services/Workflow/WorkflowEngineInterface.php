@@ -18,9 +18,9 @@ use App\Models\Validation;
  * WorkflowEngineInterface
  * ==========================================================================
  *
- * Le contrat unique que les Controllers (Etape 12) appelleront - jamais
+ * Le contrat unique que les Controllers appelleront - jamais
  * directement une classe concrete. C'est ce qui permettra demain de
- * remplacer l'implementation (par ex. brancher un moteur de regles
+ * remplacer l'implémentation (par ex. brancher un moteur de règles
  * externe) sans toucher un seul Controller.
  * ==========================================================================
  */
@@ -28,7 +28,7 @@ interface WorkflowEngineInterface
 {
     /**
      * BR-28 : cree une Request a partir d'un Form publie, l'initialise
-     * sur la premiere Step (is_start) du Workflow resolu en derniere
+     * sur la première Step (is_start) du Workflow resolu en dernière
      * version publiee (BR-25).
      *
      * @throws FormNotPublishedException si le Form n'est pas publie (BR-28).
@@ -52,7 +52,7 @@ interface WorkflowEngineInterface
      * BR-36/38/39/41 : enregistre la decision d'un Validateur.
      * Si Approved, selectionne et execute la Transition eligible
      * (BR-21/22/23) et avance la Request vers le Step suivant.
-     * Si Rejected, cloture immediatement le Workflow (BR-39).
+     * Si Rejected, cloture immédiatement le Workflow (BR-39).
      *
      * @throws ValidationNotAllowedException si l'utilisateur n'est pas le
      *                              Validateur attendu pour ce Step (BR-36).

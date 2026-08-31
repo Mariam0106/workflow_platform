@@ -9,7 +9,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      *
-     * CORRECTION (Etape 0) :
+     * CORRECTION:
      * Cette migration ne correspondait plus au Model FormField (qui
      * attend deja technical_name / placeholder / options / is_active
      * et utilise SoftDeletes). Realignee sur le Model :
@@ -17,7 +17,7 @@ return new class extends Migration
      * - Ajout de placeholder, options (JSON, utile pour les champs de
      *   type "select"), is_active (permet de desactiver un champ sans
      *   le supprimer - important car BR-54 interdit de supprimer une
-     *   configuration deja referencee par des donnees historiques).
+     *   configuration deja referencee par des données historiques).
      * - Ajout de deleted_at (soft delete), coherent avec le trait
      *   SoftDeletes deja utilise par le Model.
      * - is_readonly retire (non utilise par le Model actuellement ;

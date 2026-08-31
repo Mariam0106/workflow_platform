@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Donne enfin a Department/Entity une vraie notion de "responsable",
  * jusqu'ici absente (voir NullOrganisationManagerResolver, qui
- * degradait silencieusement les Etapes de type DEPARTMENT_MANAGER /
+ * dégradait silencieusement les Étapes de type DEPARTMENT_MANAGER /
  * ENTITY_MANAGER en "aucun validateur trouve"). Nullable : un
  * Departement/une Entite peut exister sans responsable designe encore,
  * exactement comme users.manager_id l'est deja pour le sommet de la

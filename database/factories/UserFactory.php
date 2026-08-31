@@ -24,7 +24,7 @@ class UserFactory extends Factory
     /**
      * Define the model's default state.
      *
-     * NOTE (Etape 0) : reecrite entierement - l'ancienne version
+     * NOTE: reecrite entierement - l'ancienne version
      * generait "name"/"email_verified_at", des colonnes qui n'existent
      * pas sur notre table users, et ne fournissait aucune des 4
      * relations obligatoires (BR-03/04/05/06).
@@ -54,7 +54,7 @@ class UserFactory extends Factory
 
     /**
      * BR-06 (multi-role) : chaque User cree par la factory obtient
-     * automatiquement une ligne pivot pour son Role par defaut, meme si
+     * automatiquement une ligne pivot pour son Role par defaut, même si
      * l'appelant n'a jamais entendu parler de user_application_roles -
      * garantit que TOUS les appels existants (Seeder, tests, autres
      * factories) restent valides sans modification : un User fabrique

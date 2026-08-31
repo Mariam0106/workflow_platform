@@ -30,7 +30,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * • A FieldOption belongs to exactly one FormField.
  * • A FormField may have several FieldOptions.
  * • FieldOptions are only meaningful for select/radio/checkbox/multiselect
- *   Form Fields - enforced at the application layer (Etape 12 Form
+ *   Form Fields - enforced at the application layer (Étape 12 Form
  *   Requests), not at the database level.
  * • At most one FieldOption per FormField should be marked is_default
  *   (enforced at the application layer - see FieldOption::markAsDefault()).

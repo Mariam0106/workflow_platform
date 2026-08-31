@@ -10,13 +10,13 @@ namespace App\DataTransferObjects\Organisation;
  * ==========================================================================
  *
  * Carries the data needed to create a User, from the Controller/Request
- * layer down to UserService (Étape 8) - the Service never touches
+ * layer down to UserService - the Service never touches
  * `$request->validated()` directly, it receives a typed, immutable object.
  *
  * Two producers today:
  *  - RegisterUserRequest (Jalon J1, self-registration - is_active forced
  *    to true, password already in clear text, hashed later by the Service)
- *  - The future Admin "create user" screen (Étape 13)
+ * - The future Admin "create user" screen
  *
  * Business Rules covered
  * --------------------------------------------------------------------------

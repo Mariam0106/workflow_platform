@@ -239,12 +239,11 @@
         </script>
     @endif
 
-    {{-- BUG CORRIGÉ : DomainException::render() renvoie ses erreurs
-         métier (ex. "impossible de publier, aucune étape") via le sac
-         $errors standard de Laravel - rien ne les affichait nulle part
-         dans l'app, une action refusée par une règle métier semblait
-         donc "ne rien faire" sans aucune explication. Corrigé une
-         bonne fois au niveau du layout plutôt que sur chaque écran. --}}
+    {{-- Affichage centralisé des erreurs métier (DomainException) : ces
+         exceptions remontent via le sac $errors standard de Laravel
+         (ex. "impossible de publier, aucune étape"), affichées ici une
+         seule fois pour tout le Back Office plutôt que dupliquées sur
+         chaque écran. --}}
     @if ($errors->any())
         <div
             id="flash-error-toast"

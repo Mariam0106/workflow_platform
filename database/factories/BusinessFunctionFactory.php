@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends Factory<BusinessFunction>
  *
- * NOTE (Etape 0) : factory minimale - voir EntityFactory.
+ * NOTE: factory minimale - voir EntityFactory.
  */
 class BusinessFunctionFactory extends Factory
 {

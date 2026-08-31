@@ -10,7 +10,7 @@ namespace App\Enums;
  * ==========================================================================
  *
  * How a transition_conditions row combines with the NEXT one (by
- * execution_order) when the Workflow Engine (Etape 9) evaluates a
+ * execution_order) when the Workflow Engine evaluates a
  * Transition - BR-21/22/23.
  */
 enum TransitionLogicalOperator: string

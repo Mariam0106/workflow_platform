@@ -16,7 +16,7 @@ namespace App\DataTransferObjects\Organisation;
  * clear them (e.g. removing someone's manager). Instead, this DTO tracks
  * which keys were *provided*, independently of whether their value is null.
  *
- * Typical caller: the Admin "edit user" screen (Étape 13) sends only the
+ * Typical caller: the Admin "edit user" screen sends only the
  * fields the form actually submitted.
  * ==========================================================================
  */

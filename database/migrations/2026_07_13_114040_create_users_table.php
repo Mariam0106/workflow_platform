@@ -9,8 +9,8 @@ return new class extends Migration
     /**
      * Run the migrations.
      *
-     * CORRECTION (Etape 0) :
-     * Ajout de manager_id (auto-reference nullable) pour le responsable
+     * CORRECTION:
+     * Ajout de manager_id (auto-référence nullable) pour le responsable
      * hierarchique N+1, exige explicitement par le cahier des charges
      * ("Les responsables hierarchiques (N+1)") et absent de la version
      * precedente.

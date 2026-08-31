@@ -89,13 +89,13 @@ class SubmitAndValidateRequestTest extends TestCase
             'workflow_id' => $workflow->id,
             'step_order' => 2,
             // BR-06 : chaque Étape - y compris l'Étape de fin - a son
-            // propre Validateur et doit recevoir SA PROPRE validation
-            // avant que le Workflow ne se termine (voir correction du
-            // bug "Terminée après une seule validation sur 2" -
-            // WorkflowEngineService::advanceToNextStep()). Réutilise le
-            // même $this->manager que l'Étape de début, exactement le
-            // scénario réel qui a révélé le bug (le même validateur
-            // configuré sur les deux Étapes d'un Workflow à 2 Étapes).
+            // propre Validateur et doit recevoir sa propre validation
+            // avant que le Workflow ne se termine (voir
+            // WorkflowEngineService::advanceToNextStep()). Test de
+            // non-régression : réutilise volontairement le même
+            // $this->manager comme Validateur sur les deux Étapes,
+            // pour garantir qu'une seule validation par Étape ne
+            // clôture jamais prématurément le Workflow.
             'validator_type' => ValidatorType::User,
             'validator_reference' => $this->manager->id,
         ]);
@@ -226,10 +226,11 @@ class SubmitAndValidateRequestTest extends TestCase
         $this->assertDatabaseHas('requests', ['id' => $requestId, 'status' => 'Submitted']);
         $this->assertDatabaseHas('requests', ['id' => $requestId, 'current_step_id' => $this->endStep->id]);
 
-        // Étape 2 (fin, Validateur explicitement $this->manager dans ce
-        // test - même scénario que le bug réel rapporté : le même
-        // Utilisateur configuré comme Validateur sur les deux Étapes).
-        // Seule CETTE seconde validation doit clore le Workflow.
+        // Étape 2 (fin) : le Validateur est explicitement le même
+        // $this->manager que sur l'Étape 1 - garantit qu'une seule
+        // validation par Étape ne clôture jamais prématurément le
+        // Workflow, même quand le même Utilisateur valide les deux.
+        // Seule cette seconde validation doit clore le Workflow.
         $response = $this->actingAs($this->manager)->postJson("/workflow/requests/{$requestId}/validations", [
             'decision' => 'Approved',
         ]);

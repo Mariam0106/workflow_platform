@@ -6,7 +6,7 @@ namespace App\DataTransferObjects\Organisation;
 
 /**
  * Mirrors EntityData/DepartmentData - a Business Function has the same
- * flat shape (name/code/description/is_active), no parent reference.
+ * flat shape (name/code/description/is_active), no parent référence.
  */
 final readonly class BusinessFunctionData
 {

@@ -18,12 +18,12 @@ use App\Models\AuditLog;
  * BR-48 : chaque action importante est journalisee.
  * BR-50 : User/Date/Heure/Action/Entity/Old/New.
  *
- * Volontairement specifique aux 4 evenements Workflow ici (contrairement
- * a l'Observer Eloquent generique prevu plus tard pour les changements
- * de champ bruts) : ces 4 evenements representent des ACTIONS METIER
+ * Volontairement specifique aux 4 événements Workflow ici (contrairement
+ * a l'Observer Eloquent générique prevu plus tard pour les changements
+ * de champ bruts) : ces 4 événements representent des ACTIONS METIER
  * (soumission, approbation, rejet, aboutissement), pas de simples
  * modifications de colonnes - la distinction merite des entrees d'audit
- * plus lisibles ("submitted" plutot que "status changed from X to Y").
+ * plus lisibles ("submitted" plutôt que "status changed from X to Y").
  * ==========================================================================
  */
 class CreateAuditLog

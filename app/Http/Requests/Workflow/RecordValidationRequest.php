@@ -13,9 +13,9 @@ use Illuminate\Foundation\Http\FormRequest;
  * ==========================================================================
  *
  * BR-40 : le commentaire de rejet est deja impose au niveau du DTO
- * (Etape 6, RecordValidationData). La regle required_if ci-dessous fait
+ *. La règle required_if ci-dessous fait
  * la MEME verification, plus tot, pour renvoyer une erreur de
- * validation HTTP standard (422, format Laravel classique) plutot
+ * validation HTTP standard (422, format Laravel classique) plutôt
  * qu'une DomainException - meilleure experience pour un formulaire web,
  * defense en profondeur pour une API.
  * ==========================================================================

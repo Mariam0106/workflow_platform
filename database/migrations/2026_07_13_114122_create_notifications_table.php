@@ -9,7 +9,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      *
-     * CORRECTION (Etape 0) :
+     * CORRECTION:
      * Cette migration ne correspondait plus du tout au Model
      * Notification (qui attend deja recipient_id / channel / status /
      * failure_reason). Realignee sur le Model :
@@ -57,7 +57,7 @@ return new class extends Migration
             $table->text('failure_reason')->nullable();
 
             // BR-47 : utilise config('workflow.notification_retry_attempts')
-            // (Etape 2) pour savoir combien de tentatives restent avant
+            // pour savoir combien de tentatives restent avant
             // d'abandonner et de ne conserver que failure_reason.
             $table->unsignedTinyInteger('attempt_count')->default(0);
             $table->timestamp('last_attempt_at')->nullable();

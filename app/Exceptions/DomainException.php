@@ -15,20 +15,20 @@ use RuntimeException;
  *
  * IMPORTANT : ce fichier est PARTAGE entre les deux domaines du projet
  * (Organisation et Workflow). Il ne doit exister qu'UNE seule fois dans
- * le projet, ici. Le collegue qui travaille sur le domaine Organisation
- * doit etendre CETTE classe pour ses propres exceptions
- * (app/Exceptions/Organisation/*), jamais en recreer une autre.
+ * le projet, ici. Le collègue qui travaille sur le domaine Organisation
+ * doit étendre CETTE classe pour ses propres exceptions
+ * (app/Exceptions/Organisation/*), jamais en recréer une autre.
  *
  * --------------------------------------------------------------------------
- * Regle d'or (Etape 5 du roadmap)
+ * Règle d'or
  * --------------------------------------------------------------------------
- * Un Service ne retourne JAMAIS `false`/`null` pour signaler un echec
- * metier - il leve une DomainException. Le Controller (Etape 12) attrape
- * DomainException une seule fois, generique, et laisse chaque sous-classe
- * dire elle-meme quel code HTTP et quel code d'erreur stable renvoyer
+ * Un Service ne retourne JAMAIS `false`/`null` pour signaler un échec
+ * metier - il leve une DomainException. Le Controller attrape
+ * DomainException une seule fois, générique, et laisse chaque sous-classe
+ * dire elle-même quel code HTTP et quel code d'erreur stable renvoyer
  * (grace a render() ci-dessous, une convention Laravel : si l'exception
  * definit render(), le Handler global l'appelle automatiquement - aucun
- * cablage supplementaire necessaire dans bootstrap/app.php).
+ * cablage supplementaire nécessaire dans bootstrap/app.php).
  * ==========================================================================
  */
 abstract class DomainException extends RuntimeException
@@ -92,10 +92,10 @@ abstract class DomainException extends RuntimeException
      * les requetes qui en attendent reellement (API/XHR/`Accept:
      * application/json`) - jusqu'ici render() renvoyait TOUJOURS du
      * JSON, y compris pour un simple POST de formulaire HTML (ex :
-     * ActiveRoleController, UserController::deactivate() sur soi-meme).
+     * ActiveRoleController, UserController::deactivate() sur soi-même).
      * Un navigateur recevant du JSON brut a la place d'une redirection
-     * avec message d'erreur est un bug reel pour toute UI Back Office
-     * (Etape 13/14) - corrige ici, au point unique de rendu, plutot que
+     * avec message d'erreur est un bug réel pour toute UI Back Office
+     * - corrige ici, au point unique de rendu, plutôt que
      * dans chaque Controller.
      */
     public function render(Request $request): JsonResponse|\Illuminate\Http\RedirectResponse

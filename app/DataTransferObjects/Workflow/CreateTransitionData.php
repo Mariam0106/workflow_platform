@@ -37,7 +37,7 @@ final readonly class CreateTransitionData
         }
 
         // BR-22 : une Transition par defaut n'a pas besoin de conditions
-        // (elle sert justement de filet de securite quand aucune autre
+        // (elle sert justement de filet de sécurité quand aucune autre
         // ne s'applique) - avoir les deux a la fois est un signal
         // probable d'erreur de configuration.
         if ($this->isDefault && $this->conditions !== []) {

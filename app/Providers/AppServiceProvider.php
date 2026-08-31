@@ -13,7 +13,7 @@ class AppServiceProvider extends ServiceProvider
      * conflit Git sur ce fichier partage). Voir
      * App\Providers\WorkflowServiceProvider (domaine Workflow) et
      * App\Providers\OrganisationRepositoryServiceProvider (domaine
-     * Organisation, cote collegue).
+     * Organisation, cote collègue).
      */
     public function register(): void
     {

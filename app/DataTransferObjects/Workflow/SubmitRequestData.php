@@ -12,13 +12,13 @@ use InvalidArgumentException;
  * SubmitRequestData
  * ==========================================================================
  *
- * Ce que WorkflowEngineService::submit() (Etape 9) recoit - jamais un
+ * Ce que WorkflowEngineService::submit() recoit - jamais un
  * `array $data` brut. Chaque cle est nommee et typee : impossible
  * d'oublier un champ ou de se tromper de nom sans que PHP ne le signale
- * immediatement (contrairement a un tableau associatif classique).
+ * immédiatement (contrairement a un tableau associatif classique).
  *
  * "values" est la liste des reponses du formulaire dynamique, sous forme
- * [form_field_id => valeur] - reste generique quel que soit le
+ * [form_field_id => valeur] - reste générique quel que soit le
  * formulaire (BR-56), sans jamais nommer un champ metier specifique ici.
  * ==========================================================================
  */
@@ -52,7 +52,7 @@ final readonly class SubmitRequestData
     }
 
     /**
-     * Builds this DTO from an already-validated HTTP Request (Etape 12
+     * Builds this DTO from an already-validated HTTP Request (Étape 12
      * will call this from a Form Request's validated() array).
      */
     public static function fromRequest(HttpRequest $request): self

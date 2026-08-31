@@ -33,19 +33,19 @@ class RequestRepository implements RequestRepositoryInterface
     }
 
     /**
-     * NOTE (Etape 8) : verrouille les lignes de l'annee concernee pour
+     * NOTE: verrouille les lignes de l'année concernee pour
      * calculer le prochain numero, ce qui protege correctement contre
      * les collisions sous MySQL (InnoDB) tant que la transaction
      * englobe aussi l'INSERT final (a faire par WorkflowEngineService,
-     * Etape 9 - ne PAS appeler cette methode dans une transaction
+     * Étape 9 - ne PAS appeler cette methode dans une transaction
      * separee de la creation de la Request, sinon la fenetre de race
      * condition se rouvre entre les deux appels).
      *
-     * Filet de securite supplementaire : reference_number est UNIQUE en
-     * base (Etape 0) - meme en cas de collision improbable, l'INSERT
-     * echouera proprement plutot que de dupliquer une reference,
+     * Filet de sécurité supplementaire : reference_number est UNIQUE en
+     * base - même en cas de collision improbable, l'INSERT
+     * echouera proprement plutôt que de dupliquer une référence,
      * remontant une QueryException que le Service devra intercepter et
-     * reessayer (voir Etape 9).
+     * reessayer (voir Étape 9).
      */
     public function nextSequenceNumber(int $year): int
     {
@@ -62,13 +62,13 @@ class RequestRepository implements RequestRepositoryInterface
     /**
      * BR-36 : Requests actuellement en attente de CE validateur precis.
      *
-     * Ne resout que les strategies structurellement verifiables sans
+     * Ne resout que les stratégies structurellement verifiables sans
      * dependre du domaine Organisation (ROLE via user_application_roles,
      * USER via l'id exact, N_PLUS_1 via manager_id deja present sur
-     * users - Etape 0). Les strategies ENTITY_MANAGER/DEPARTMENT_MANAGER
-     * necessitent une notion de "responsable d'entite/departement" qui
+     * users - Étape 0). Les stratégies ENTITY_MANAGER/DEPARTMENT_MANAGER
+     * necessitent une notion de "responsable d'entité/departement" qui
      * releve du domaine Organisation et sera branchee via
-     * ValidatorResolverService (Etape 9), pas ici.
+     * ValidatorResolverService, pas ici.
      *
      * NOTE (multi-role, BR-06) : ROLE se verifie desormais contre TOUS
      * les Roles Applicatifs autorises de $validator (pivot

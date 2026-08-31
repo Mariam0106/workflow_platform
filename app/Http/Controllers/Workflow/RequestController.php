@@ -17,10 +17,10 @@ use Illuminate\Http\JsonResponse;
  * ==========================================================================
  *
  * Volontairement fin : Form Request -> DTO -> Service (via son
- * Contract) -> Resource. Aucune regle de gestion ici - tout vit dans
- * WorkflowEngineService (Etape 8) et ses exceptions (Etape 5), qui se
- * rendent seules en reponse HTTP via DomainException::render(), sans
- * bloc try/catch necessaire dans ce Controller.
+ * Contract) -> Resource. Aucune règle de gestion ici - tout vit dans
+ * WorkflowEngineService et ses exceptions, qui se
+ * rendent seules en réponse HTTP via DomainException::render(), sans
+ * bloc try/catch nécessaire dans ce Controller.
  * ==========================================================================
  */
 class RequestController extends Controller

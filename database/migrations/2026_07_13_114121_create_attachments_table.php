@@ -9,7 +9,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      *
-     * CORRECTION (Etape 4) : cette migration ne correspondait pas au
+     * CORRECTION: cette migration ne correspondait pas au
      * Model Attachment, qui attend deja storage_path / size / extension
      * (jamais detecte plus tot car aucun test de bout en bout n'avait
      * encore cree d'Attachment).

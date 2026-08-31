@@ -9,7 +9,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      *
-     * CORRECTION (Etape 0) :
+     * CORRECTION:
      * "decision" passe d'un ENUM MySQL (PENDING/APPROVED/REJECTED/
      * RETURNED) a un varchar contraint uniquement par le Model
      * (Validation::APPROVED / Validation::REJECTED).

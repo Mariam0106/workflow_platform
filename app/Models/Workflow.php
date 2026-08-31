@@ -168,7 +168,7 @@ class Workflow extends Model
 
     /**
      * Toutes les Transitions de ce Workflow (tous Steps confondus) -
-     * raccourci pratique pour le Workflow Designer (Étape 13), qui a
+     * raccourci pratique pour le Workflow Designer, qui a
      * besoin de la liste complète pour dupliquer un Workflow ou lister
      * ses Transitions sans passer par chaque Step un par un.
      */

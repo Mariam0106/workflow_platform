@@ -19,7 +19,7 @@ use Illuminate\View\View;
 
 /**
  * ==========================================================================
- * DashboardController (Étape 14 - BackOffice)
+ * DashboardController
  * ==========================================================================
  *
  * Cahier des charges, "Interface utilisateur (Tableau de bord)" : KPI +

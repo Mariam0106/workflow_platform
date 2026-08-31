@@ -30,7 +30,7 @@ class InvalidTransitionException extends WorkflowEngineException
     }
 
     /**
-     * BR-22 : plus d'une Transition par defaut sur le meme Step est une
+     * BR-22 : plus d'une Transition par defaut sur le même Step est une
      * erreur de configuration (ambiguite sur laquelle executer).
      */
     public static function multipleDefaultTransitions(WorkflowStep $step): self

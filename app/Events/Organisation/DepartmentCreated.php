@@ -17,7 +17,7 @@ use Illuminate\Queue\SerializesModels;
  * Fired once a Department has been successfully persisted - by
  * DepartmentService, never by the Repository directly.
  *
- * Consumers (Étape 9, Workflow side - Lali) : typically an audit log
+ * Consumers: typically an audit log
  * entry. This class only carries data, it has no opinion on what
  * happens next.
  * ==========================================================================

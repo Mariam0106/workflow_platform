@@ -27,7 +27,7 @@ use Illuminate\Support\ServiceProvider;
  * WorkflowServiceProvider
  * ==========================================================================
  *
- * Enregistre les interfaces du module Workflow avec leurs implementations
+ * Enregistre les interfaces du module Workflow avec leurs implémentations
  * concretes dans le conteneur - miroir exact de
  * App\Providers\OrganisationRepositoryServiceProvider (domaine
  * Organisation). Chaque domaine a son propre Service Provider : plus
@@ -37,8 +37,8 @@ use Illuminate\Support\ServiceProvider;
  * App\Services\Organisation\OrganisationManagerResolver, qui s'appuie
  * sur departments.manager_id / entities.manager_id (voir migration
  * add_manager_id_to_departments_and_entities) - remplace l'ancien
- * NullOrganisationManagerResolver (placeholder qui degradait toujours
- * vers "aucun validateur trouve" pour les Etapes DEPARTMENT_MANAGER /
+ * NullOrganisationManagerResolver (placeholder qui dégradait toujours
+ * vers "aucun validateur trouve" pour les Étapes DEPARTMENT_MANAGER /
  * ENTITY_MANAGER).
  *
  * @see \App\Contracts\Repositories\Workflow

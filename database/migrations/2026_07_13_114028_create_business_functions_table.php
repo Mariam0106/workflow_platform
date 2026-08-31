@@ -9,11 +9,11 @@ return new class extends Migration
     /**
      * Run the migrations.
      *
-     * CORRECTION (Etape 0) :
+     * CORRECTION:
      * Business Function n'est plus rattachee a un Department unique.
      * BR-05 donne "Commercial, Credit Client, DAF, DG" comme exemples :
      * ce sont des fonctions transverses, reutilisables dans toute
-     * l'entreprise (toute entite, tout departement). Un FK department_id
+     * l'entreprise (toute entité, tout departement). Un FK department_id
      * obligatoire empechait cette reutilisation.
      */
     public function up(): void

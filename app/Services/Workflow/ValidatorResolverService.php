@@ -19,7 +19,7 @@ use Illuminate\Support\Collection;
  * BR-59 : le moteur determine le validateur via la configuration
  * (workflow_steps.validator_type / validator_reference), jamais via du
  * code metier code en dur. Ajouter une nouvelle Entity/Departement/Role
- * ne necessite donc jamais de modifier cette classe.
+ * ne nécessite donc jamais de modifier cette classe.
  * ==========================================================================
  */
 class ValidatorResolverService

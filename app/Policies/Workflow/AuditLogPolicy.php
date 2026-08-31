@@ -14,8 +14,8 @@ use App\Models\User;
  * ==========================================================================
  *
  * BR-49 : l'historique d'audit n'est JAMAIS modifiable, sans exception
- * (meme logique que ValidationPolicy - BR-42). La consultation reste
- * reservee aux Administrateurs (BR-51 : donnees sensibles - IP,
+ * (même logique que ValidationPolicy - BR-42). La consultation reste
+ * reservee aux Administrateurs (BR-51 : données sensibles - IP,
  * navigateur, anciennes/nouvelles valeurs).
  * ==========================================================================
  */

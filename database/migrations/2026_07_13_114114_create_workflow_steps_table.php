@@ -9,14 +9,14 @@ return new class extends Migration
     /**
      * Run the migrations.
      *
-     * CORRECTION (Etape 0) :
+     * CORRECTION:
      * - is_initial/is_final renommes en is_start/is_end pour matcher
      *   le Model existant (WorkflowStep::isStart()/isEnd()) et le MCD
      *   final valide.
      * - validator_type passe d'un ENUM MySQL a un varchar : la liste
      *   des types de validateur pourra evoluer sans nouvelle migration
      *   (BR-56/57/59) ; la contrainte de valeurs sera assuree par un
-     *   Enum PHP (App\Enums\ValidatorType) a l'Etape 1.
+     *   Enum PHP (App\Enums\ValidatorType) a l'Étape 1.
      */
     public function up(): void
     {

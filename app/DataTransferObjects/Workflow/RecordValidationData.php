@@ -13,12 +13,12 @@ use Illuminate\Http\Request as HttpRequest;
  * RecordValidationData
  * ==========================================================================
  *
- * Ce que WorkflowEngineService::recordValidation() (Etape 9) recoit.
+ * Ce que WorkflowEngineService::recordValidation() recoit.
  *
  * BR-40 (le commentaire de rejet est obligatoire) est deja applique ICI,
  * a la construction du DTO - pas besoin d'attendre le Service ou la
- * base de donnees pour le detecter : c'est une regle purement
- * structurelle (aucune requete necessaire pour la verifier).
+ * base de données pour le detecter : c'est une règle purement
+ * structurelle (aucune requete nécessaire pour la verifier).
  * ==========================================================================
  */
 final readonly class RecordValidationData

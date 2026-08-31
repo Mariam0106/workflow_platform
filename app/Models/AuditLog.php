@@ -159,11 +159,11 @@ class AuditLog extends Model
     /**
      * Determine whether this action modified data.
      *
-     * NOTE (Etape 4) : renommee depuis hasChanges() - ce nom entrait en
+     * NOTE: renommee depuis hasChanges() - ce nom entrait en
      * collision avec Illuminate\Database\Eloquent\Model::hasChanges(),
      * deja definie par Eloquent avec une signature differente, ce qui
-     * provoquait une erreur fatale PHP a la premiere instanciation
-     * reelle d'un AuditLog.
+     * provoquait une erreur fatale PHP a la première instanciation
+     * réelle d'un AuditLog.
      */
     public function hasDataChanges(): bool
     {
@@ -179,7 +179,7 @@ class AuditLog extends Model
     }
 
     /**
-     * Return a human-readable entity reference.
+     * Return a human-readable entity référence.
      */
     public function entityReference(): string
     {

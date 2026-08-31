@@ -9,8 +9,8 @@ return new class extends Migration
     /**
      * Run the migrations.
      *
-     * CORRECTION (Etape 0) : meme raisonnement que pour "workflows"
-     * (version entiere, status Draft/Published/Archived, unicite
+     * CORRECTION: même raisonnement que pour "workflows"
+     * (version entière, status Draft/Published/Archived, unicite
      * (code, version) au lieu de code seul) - BR-15/16/17.
      */
     public function up(): void

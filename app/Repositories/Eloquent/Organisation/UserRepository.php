@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Collection;
  * UserRepository
  * ==========================================================================
  *
- * Eloquent-based implementation of UserRepositoryInterface.
+ * Eloquent-based implémentation of UserRepositoryInterface.
  *
  * Business Rules covered
  * --------------------------------------------------------------------------
@@ -205,7 +205,7 @@ class UserRepository implements UserRepositoryInterface
      * User model's `password` cast is `'hashed'`, which auto-hashes on
      * write (and is idempotent if it's already hashed), so this is safe
      * whether or not a Service hashes it first. Still, once UserService
-     * exists (Étape 8), it should own that decision explicitly rather
+     * exists, it should own that decision explicitly rather
      * than relying on the implicit cast.
      */
     public function createFromData(CreateUserData $dto): User

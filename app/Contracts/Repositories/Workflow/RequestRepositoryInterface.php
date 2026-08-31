@@ -21,7 +21,7 @@ interface RequestRepositoryInterface
     public function findByReference(RequestReference $reference): ?Request;
 
     /**
-     * BR-29 : prochain numero de sequence pour une annee donnee - doit
+     * BR-29 : prochain numero de sequence pour une année donnée - doit
      * etre atomique (verrouillage/transaction) pour garantir l'unicite
      * sous forte concurrence. C'est le Repository, pas le Value Object
      * RequestReference, qui sait COMMENT obtenir ce numero (compteur
@@ -33,7 +33,7 @@ interface RequestRepositoryInterface
     /**
      * BR-36 : Requests actuellement en attente de validation par ce
      * User precis (utilise par le tableau de bord "mes validations a
-     * faire", Etape 15).
+     * faire", Étape 15).
      */
     public function findPendingForValidator(User $validator): Collection;
 }

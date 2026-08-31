@@ -27,8 +27,8 @@ use Illuminate\Support\ServiceProvider;
  * ==========================================================================
  *
  * Enregistre les Policies du domaine Workflow - exact miroir de
- * OrganisationPolicyServiceProvider (meme raisonnement : Policies sous
- * App\Policies\Workflow\* plutot que le App\Policies\* plat attendu par
+ * OrganisationPolicyServiceProvider (même raisonnement : Policies sous
+ * App\Policies\Workflow\* plutôt que le App\Policies\* plat attendu par
  * l'auto-decouverte Laravel, donc enregistrement explicite via
  * Gate::policy() ici).
  * ==========================================================================

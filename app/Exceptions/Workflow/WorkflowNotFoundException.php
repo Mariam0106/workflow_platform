@@ -50,7 +50,7 @@ class WorkflowNotFoundException extends WorkflowEngineException
      * currentStep() renvoie silencieusement null (SoftDeletes exclut
      * les enregistrements archives des relations belongsTo standard).
      * Sans cette exception, le moteur plantait avec une TypeError brute
-     * au lieu d'un echec metier propre.
+     * au lieu d'un échec metier propre.
      */
     public static function currentStepUnavailable(Request $request): self
     {
@@ -62,7 +62,7 @@ class WorkflowNotFoundException extends WorkflowEngineException
     }
 
     /**
-     * Meme risque que ci-dessus, mais sur l'etape de DESTINATION d'une
+     * Meme risque que ci-dessus, mais sur l'étape de DESTINATION d'une
      * Transition (WorkflowTransition::toStep()).
      */
     public static function transitionTargetUnavailable(WorkflowTransition $transition): self

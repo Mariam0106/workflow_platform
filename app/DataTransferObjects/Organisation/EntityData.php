@@ -10,7 +10,7 @@ namespace App\DataTransferObjects\Organisation;
  * ==========================================================================
  *
  * Mirrors DepartmentData exactly - an Entity is the top of the hierarchy,
- * so it has no parent FK to carry (unlike Department, which references
+ * so it has no parent FK to carry (unlike Department, which références
  * entity_id).
  *
  * NOTE : neither this class nor EntityService existed before Étape 11 -

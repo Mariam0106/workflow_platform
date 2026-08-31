@@ -11,7 +11,7 @@ namespace App\Exceptions\Organisation;
  *
  * NOTE : this is a Service-layer, coarse-grained guard - it exists so
  * Services never silently perform an action they shouldn't. The
- * fine-grained, per-resource authorization (Étape 10 - Policies) will
+ * fine-grained, per-resource authorization will
  * sit in front of Controllers and may end up making some of these
  * checks redundant there, but Services must stay safe to call directly
  * (from Jobs, Artisan commands, tests...) without relying on a Policy

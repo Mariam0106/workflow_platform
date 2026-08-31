@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Collection;
  * DepartmentRepository
  * ==========================================================================
  *
- * Eloquent-based implementation of DepartmentRepositoryInterface.
+ * Eloquent-based implémentation of DepartmentRepositoryInterface.
  *
  * Business Rules covered
  * --------------------------------------------------------------------------

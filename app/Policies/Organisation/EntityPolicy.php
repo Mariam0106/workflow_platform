@@ -13,7 +13,7 @@ use App\Services\Organisation\PermissionService;
  * EntityPolicy
  * ==========================================================================
  *
- * Gates the BackOffice Entity management screens (Étape 13/14) -
+ * Gates the BackOffice Entity management screens -
  * Administrator-only.
  *
  * NOTE : no EntityService exists yet (Étape 8 only delivered UserService/

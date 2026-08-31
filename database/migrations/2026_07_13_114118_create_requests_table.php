@@ -9,8 +9,8 @@ return new class extends Migration
     /**
      * Run the migrations.
      *
-     * CORRECTION (Etape 0) :
-     * - "reference" renomme en "reference_number" pour matcher le
+     * CORRECTION:
+     * - "référence" renomme en "reference_number" pour matcher le
      *   Model et le vocabulaire exact de BR-29 ("unique Reference
      *   Number").
      * - Ajout de "workflow_version" (copie explicite de
@@ -22,9 +22,9 @@ return new class extends Migration
      *   structure de versioning des workflows evolue plus tard.
      * - "status" passe d'un ENUM MySQL a un varchar (coherent avec le
      *   reste : les valeurs seront contraintes par un Enum PHP a
-     *   l'Etape 1, sans dependre d'une modification de schema pour
+     *   l'Étape 1, sans dependre d'une modification de schema pour
      *   ajouter un statut futur - BR-56/57).
-     * - CORRECTION (Etape 1) : le defaut/valeurs initiales
+     * - CORRECTION: le defaut/valeurs initiales
      *   (DRAFT/SUBMITTED/IN_PROGRESS/APPROVED/REJECTED/CANCELLED, en
      *   majuscules) ne correspondaient pas a ce que le Model Request
      *   attendait deja (Draft/Submitted/Rejected/Completed, Title

@@ -18,9 +18,9 @@ use Stringable;
  * "REQ-2026-000152".
  *
  * This class is the ONLY place in the codebase allowed to know the exact
- * format of a reference number. Nowhere else should a string be built by
+ * format of a référence number. Nowhere else should a string be built by
  * hand with "REQ-" . date(...) - that logic lives here once, and reads its
- * prefix/separator/padding from config('workflow.*') (Etape 2), so an
+ * prefix/separator/padding from config('workflow.*'), so an
  * administrator can change the format without touching PHP code.
  *
  * Immutable : once constructed, a RequestReference cannot be changed.

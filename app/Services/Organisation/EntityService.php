@@ -18,7 +18,7 @@ use Illuminate\Support\Arr;
  * ==========================================================================
  *
  * Every write path for an Entity goes through here - admin-only. Mirrors
- * DepartmentService, minus the parent-reference check (an Entity has no
+ * DepartmentService, minus the parent-référence check (an Entity has no
  * parent - it IS the top of the hierarchy, BR-02).
  *
  * NOTE : added at Étape 11 to support EntityController - see EntityData

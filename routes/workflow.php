@@ -28,8 +28,8 @@ use Illuminate\Support\Facades\Route;
 | Workflow Domain Routes
 |--------------------------------------------------------------------------
 |
-| Fichier separe du domaine Organisation (voir routes/organisation.php) -
-| meme principe que les Service Providers dedies par domaine.
+| Fichier séparé du domaine Organisation (voir routes/organisation.php) -
+| même principe que les Service Providers dédiés par domaine.
 |
 */
 

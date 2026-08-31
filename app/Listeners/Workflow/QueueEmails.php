@@ -20,20 +20,20 @@ use App\Models\Notification;
  *
  * BR-44/47 : repere les Notifications de canal Email en attente pour la
  * Request concernee, et met en file d'attente une DeliverNotification
- * Job par Notification (Etape 12) - le travail d'envoi effectif vit
+ * Job par Notification - le travail d'envoi effectif vit
  * dans la Job, pas ici (separation deliberee : ce Listener decide QUAND,
  * la Job sait COMMENT).
  *
- * Ce Listener lui-meme n'implemente PLUS ShouldQueue (Etape 12) : la
+ * Ce Listener lui-même n'implemente PLUS ShouldQueue: la
  * seule chose qu'il fait est une requete de lecture + dispatch(), assez
- * rapide pour rester synchrone - c'est l'envoi reel (appel reseau au
+ * rapide pour rester synchrone - c'est l'envoi réel (appel reseau au
  * fournisseur mail), dans la Job, qui merite d'etre mis en file
  * d'attente.
  *
  * Ne suppose PAS que SendNotification s'est deja execute avant elle
- * (l'ordre d'execution des Listeners d'un meme evenement n'est pas
- * garanti) : elle re-interroge elle-meme les Notifications Pending du
- * canal Email pour cette Request, plutot que de recevoir une liste
+ * (l'ordre d'execution des Listeners d'un même événement n'est pas
+ * garanti) : elle re-interroge elle-même les Notifications Pending du
+ * canal Email pour cette Request, plutôt que de recevoir une liste
  * toute prete.
  * ==========================================================================
  */

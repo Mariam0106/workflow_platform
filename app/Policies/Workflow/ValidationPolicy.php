@@ -17,10 +17,10 @@ use App\Services\Workflow\ValidatorResolverService;
  *
  * BR-36 : seul le Validateur assigne peut valider.
  * BR-42 : l'historique de validation n'est JAMAIS modifiable - pas
- * meme par un Administrateur. Contrairement a WorkflowPolicy/FormPolicy
+ * même par un Administrateur. Contrairement a WorkflowPolicy/FormPolicy
  * (ou seuls update/delete echappent au bypass Admin), ici AUCUNE
  * capacite d'ecriture posterieure a la creation n'existe : before() ne
- * bypasse donc que viewAny/view, jamais create (qui a sa propre regle
+ * bypasse donc que viewAny/view, jamais create (qui a sa propre règle
  * BR-36 stricte) ni update/delete (toujours false, sans exception).
  * ==========================================================================
  */
