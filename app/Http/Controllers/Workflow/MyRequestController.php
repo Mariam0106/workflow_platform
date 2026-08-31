@@ -201,7 +201,7 @@ class MyRequestController extends Controller
             ->with('status', "Demande {$createdRequest->reference_number} envoyée.");
     }
 
-    public function show(RequestModel $request): View
+    public function show(RequestModel $request, \App\Services\Workflow\RequestValidationPathPreviewService $pathPreview): View
     {
         Gate::authorize('view', $request);
 
@@ -215,7 +215,10 @@ class MyRequestController extends Controller
             'validations' => fn ($q) => $q->orderBy('validated_at'),
         ]);
 
-        return view('workflow.my-requests.show', ['requestModel' => $request]);
+        return view('workflow.my-requests.show', [
+            'requestModel' => $request,
+            'validationPath' => $pathPreview->preview($request),
+        ]);
     }
 
     /**
