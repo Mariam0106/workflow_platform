@@ -33,42 +33,58 @@ class RequestRepository implements RequestRepositoryInterface
     }
 
     /**
-     * NOTE: verrouille les lignes de l'année concernee pour
+     * NOTE (Etape 8) : verrouille les lignes de l'annee concernee pour
      * calculer le prochain numero, ce qui protege correctement contre
      * les collisions sous MySQL (InnoDB) tant que la transaction
      * englobe aussi l'INSERT final (a faire par WorkflowEngineService,
-     * Étape 9 - ne PAS appeler cette methode dans une transaction
+     * Etape 9 - ne PAS appeler cette methode dans une transaction
      * separee de la creation de la Request, sinon la fenetre de race
      * condition se rouvre entre les deux appels).
      *
-     * Filet de sécurité supplementaire : reference_number est UNIQUE en
-     * base - même en cas de collision improbable, l'INSERT
-     * echouera proprement plutôt que de dupliquer une référence,
+     * Filet de securite supplementaire : reference_number est UNIQUE en
+     * base (Etape 0) - meme en cas de collision improbable, l'INSERT
+     * echouera proprement plutot que de dupliquer une reference,
      * remontant une QueryException que le Service devra intercepter et
-     * reessayer (voir Étape 9).
+     * reessayer (voir Etape 9).
      */
     public function nextSequenceNumber(int $year): int
     {
         return DB::transaction(function () use ($year) {
-            $count = Request::withTrashed()
+            // BR-29 : le numero de sequence doit etre un vrai compteur
+            // monotone, jamais recalcule a partir d'un COUNT() - une
+            // suppression de Demandes (nettoyage de donnees de test,
+            // purge...) ferait autrement retomber le compte et
+            // regenererait un numero deja attribue a une Demande
+            // encore existante (violation de l'unicite). On repart
+            // donc du plus grand numero de reference REELLEMENT deja
+            // utilise cette annee, jamais du nombre de lignes.
+            $lastReference = Request::withTrashed()
                 ->whereYear('created_at', $year)
                 ->lockForUpdate()
-                ->count();
+                ->orderByDesc('reference_number')
+                ->value('reference_number');
 
-            return $count + 1;
+            if ($lastReference === null) {
+                return 1;
+            }
+
+            $padding = (int) config('workflow.reference_sequence_padding', 6);
+            $lastSequence = (int) substr((string) $lastReference, -$padding);
+
+            return $lastSequence + 1;
         });
     }
 
     /**
      * BR-36 : Requests actuellement en attente de CE validateur precis.
      *
-     * Ne resout que les stratégies structurellement verifiables sans
+     * Ne resout que les strategies structurellement verifiables sans
      * dependre du domaine Organisation (ROLE via user_application_roles,
      * USER via l'id exact, N_PLUS_1 via manager_id deja present sur
-     * users - Étape 0). Les stratégies ENTITY_MANAGER/DEPARTMENT_MANAGER
-     * necessitent une notion de "responsable d'entité/departement" qui
+     * users - Etape 0). Les strategies ENTITY_MANAGER/DEPARTMENT_MANAGER
+     * necessitent une notion de "responsable d'entite/departement" qui
      * releve du domaine Organisation et sera branchee via
-     * ValidatorResolverService, pas ici.
+     * ValidatorResolverService (Etape 9), pas ici.
      *
      * NOTE (multi-role, BR-06) : ROLE se verifie desormais contre TOUS
      * les Roles Applicatifs autorises de $validator (pivot
