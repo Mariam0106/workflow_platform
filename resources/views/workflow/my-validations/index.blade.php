@@ -8,7 +8,7 @@
     </x-page-header>
 
     <div class="mb-4">
-        <x-search-input :value="$search" placeholder="Rechercher par référence, formulaire…" />
+        <x-search-input :value="$search" placeholder="Rechercher par référence, formulaire, demandeur…" />
     </div>
 
     <x-card :padded="false">

@@ -49,7 +49,7 @@ class MyValidationController extends Controller
         $pending = $this->requests->findPendingForValidator($request->user())
             ->load(['form', 'currentStep', 'requester'])
             ->when($search, fn ($items) => $items->filter(fn ($requestItem) => str_contains(
-                mb_strtolower((string) $requestItem->reference_number . ' ' . $requestItem->form?->name),
+                mb_strtolower((string) $requestItem->reference_number . ' ' . $requestItem->form?->name . ' ' . $requestItem->requester?->full_name),
                 mb_strtolower($search),
             )))
             ->sortByDesc(fn ($requestItem) => $requestItem->priority?->sortWeight() ?? 0)
